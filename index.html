@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>공무원 여비 정산 프로그램 (관외출장)</title>
-  <!-- Pretendard 웹폰트 및 Font Awesome (예산분석기와 통일) -->
+  <!-- Pretendard 웹폰트 및 Font Awesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- html2pdf.js CDN -->
@@ -42,13 +42,13 @@
       background-color: var(--bg-main);
       color: var(--gov-slate);
       line-height: 1.5;
-      user-select: none; /* 불펌 방지 텍스트 선택 차단 */
+      user-select: none;
     }
     input, textarea, select { user-select: text !important; }
 
     .container { max-width: 1650px; margin: 0 auto; }
 
-    /* 헤더 스타일 (예산분석기와 통일) */
+    /* 헤더 스타일 */
     .header {
       background: var(--card-bg);
       padding: 20px 24px;
@@ -181,7 +181,7 @@
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 8px; }
     .form-group { display: flex; flex-direction: column; }
     .form-group label { font-size: 11.5px; font-weight: 600; margin-bottom: 4px; color: var(--gov-sub); }
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       padding: 6px 8px;
       border: 1px solid var(--border-dark);
       border-radius: 6px;
@@ -190,7 +190,7 @@
       color: var(--gov-slate);
       outline: none;
     }
-    .form-group input:focus, .form-group select:focus {
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(30,58,138,0.12);
     }
@@ -232,7 +232,7 @@
       margin-top: 8px;
     }
 
-    /* 우측 인쇄/PDF 미리보기 영역 */
+    /* 우측 인쇄/PDF 미리보기 영역 (1페이지 최적화) */
     .preview-panel {
       flex: 1.15;
       display: flex;
@@ -248,36 +248,52 @@
       margin-bottom: 10px;
     }
 
+    /* A4 1페이지 규격 (높이 297mm 내에서 70~75% 알차게 채우도록 설계) */
     #pdf-container {
       width: 210mm;
-      min-height: 297mm;
-      padding: 20mm 18mm;
+      height: 295mm; /* 2페이지 넘어감 원천 차단 */
+      max-height: 295mm;
+      padding: 16mm 16mm;
       background: #fff;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       color: #000;
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 12.5px;
+      line-height: 1.45;
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .doc-header-tag {
+      font-size: 10.5px;
+      color: #475569;
+      text-align: left;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
     }
 
     .doc-title {
       text-align: center;
-      font-size: 23px;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: 6px;
-      margin-bottom: 22px;
+      letter-spacing: 5px;
+      margin-bottom: 18px;
     }
 
     .report-table {
       width: 100%;
       border-collapse: collapse;
       border: 1.5px solid #000;
-      font-size: 12.5px;
-      margin-bottom: 25px;
+      font-size: 12px;
+      margin-bottom: 12px;
       table-layout: fixed;
     }
     .report-table th, .report-table td {
       border: 1px solid #000;
-      padding: 7px 4px;
+      padding: 9px 5px; /* 적당히 시원하게 채우는 높이 */
       vertical-align: middle;
       text-align: center;
       word-break: keep-all;
@@ -295,16 +311,34 @@
       letter-spacing: -0.4px;
     }
 
-    .statement-box {
-      margin-top: 30px;
-      text-align: left;
-      line-height: 2;
-      font-size: 13px;
+    .calc-reason-note {
+      font-size: 10px;
+      color: #475569;
+      font-weight: normal;
+      margin-top: 3px;
+      line-height: 1.35;
+      text-align: right;
     }
-    .statement-box .rule-text { margin-bottom: 10px; }
-    .statement-box .attach-text { font-size: 12px; margin-bottom: 40px; color: #475569; }
-    .sign-date { text-align: center; font-size: 14px; margin-bottom: 30px; letter-spacing: 2px; }
-    .sign-name { text-align: right; padding-right: 20mm; font-size: 14px; }
+
+    .statement-box {
+      margin-top: 15px;
+      text-align: left;
+      line-height: 1.9;
+      font-size: 12px;
+    }
+    .statement-box .rule-text { margin-bottom: 6px; }
+    .statement-box .attach-text { font-size: 11.5px; margin-bottom: 24px; color: #475569; }
+    .sign-date { text-align: center; font-size: 13.5px; margin-bottom: 20px; letter-spacing: 2px; }
+    .sign-name { text-align: right; padding-right: 15mm; font-size: 13.5px; }
+
+    .doc-footer-legal {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid #cbd5e1;
+      font-size: 9.5px;
+      color: #64748b;
+      text-align: center;
+    }
 
     /* 모달 팝업 */
     .modal-overlay {
@@ -331,7 +365,7 @@
     .modal-item-name { font-weight: 600; font-size: 13px; color: var(--primary); }
     .modal-item-addr { font-size: 11.5px; color: #64748b; margin-top: 2px; }
 
-    /* 푸터 (예산분석기와 통일) */
+    /* 통합 푸터 */
     .footer {
       padding: 24px 0 10px;
       border-top: 1px solid var(--border-color);
@@ -345,7 +379,7 @@
       body { background: transparent; padding: 0; }
       .header, .input-panel, .action-bar, .footer, .modal-overlay { display: none !important; }
       .app-main, .container { display: block; width: 100%; margin: 0; }
-      #pdf-container { box-shadow: none; padding: 0; margin: 0; width: 100%; }
+      #pdf-container { box-shadow: none; padding: 12mm; margin: 0; width: 100%; height: 100vh; max-height: 100vh; }
     }
   </style>
 </head>
@@ -374,8 +408,8 @@
     <p class="subtitle">인사혁신처 공무원 여비업무 처리기준에 근거하여 식비·일비·숙박비·운임을 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다.</p>
     
     <div class="guide-box">
-      <strong>출장 정산 처리기준 안내:</strong>
-      식비·일비 1일 <strong>25,000원</strong> 정액 (관용차 이용 시 일비 50% 감액) | 숙박비 1박 상한: 서울 <strong>100,000원</strong>, 광역시 <strong>80,000원</strong>, 기타 <strong>70,000원</strong> 실비 정산 (친지 집 숙박 20,000원). 모든 항목은 실무 상황에 맞춰 수기 금액 수정이 가능합니다.
+      <strong>출장 정산 기준 및 법적 근거 안내:</strong><br>
+      해당 계산은 <strong>「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.)</strong> 기준에 따라 산정됩니다. 식비·일비 1일 25,000원 정액(관용차 50% 감액) 및 숙박비 실비 상한(서울 10만, 광역시 8만, 기타 7만 원)을 적용하며, 실무상 필요 시 개별 항목 및 <strong>최종 청구액 수기 조정</strong>이 가능합니다.
     </div>
   </div>
 
@@ -508,7 +542,6 @@
           </div>
           <div class="form-group">
             <label>숙박비 최종 인정액(원)</label>
-            <!-- 30% 미체크 시 서울 상한액 100,000원 기본 반영 -->
             <input type="number" id="customLodgingTotal" value="100000" step="1000" oninput="applyManualAmounts()">
           </div>
         </div>
@@ -530,7 +563,6 @@
             </select>
           </div>
         </div>
-        <!-- 30% 추가인정 체크박스: 자동체크 해제됨 -->
         <div class="inline-checkbox">
           <input type="checkbox" id="lodgingExtra30" onchange="calcAll()">
           <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가지급 인정 (서울: 130,000원 상한)</label>
@@ -659,6 +691,23 @@
         </table>
       </div>
 
+      <!-- 최종 여비지급액 수기조정 및 사유 입력 (요구사항 1) -->
+      <div class="section-box" style="background:#fefce8; border-color:#fde047;">
+        <div class="section-title" style="color:#a16207;">
+          <span><i class="fa-solid fa-pen-to-square mr-1"></i> 최종 여비지급액(개인청구액) 직접 조정</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: span 2;">
+            <label style="color:#854d0e;">최종 개인청구 지급액 수기 수정(원)</label>
+            <input type="number" id="manualFinalClaim" value="319600" step="100" oninput="applyFinalManualAdjustment()">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 표 하단 반영)</label>
+            <input type="text" id="manualReason" value="기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)" placeholder="예: 숙박비 상한액 준수, 운임 실비 반영 등" oninput="applyFinalManualAdjustment()">
+          </div>
+        </div>
+      </div>
+
       <!-- 신청 일자 -->
       <div class="form-group" style="margin-top: 10px;">
         <label>정산서 신청 일자</label>
@@ -666,7 +715,7 @@
       </div>
     </div>
 
-    <!-- 2. 우측 표준 정산서 미리보기 패널 -->
+    <!-- 2. 우측 표준 정산서 미리보기 패널 (요구사항 2, 3, 4, 5 반영) -->
     <div class="preview-panel">
       <div class="action-bar">
         <button class="btn btn-secondary" onclick="window.print()">
@@ -677,126 +726,144 @@
         </button>
       </div>
 
+      <!-- 1페이지 고정 인쇄 규격 컨테이너 -->
       <div id="pdf-container">
-        <div class="doc-title">여 비 정 산 신 청 서</div>
+        <div>
+          <!-- 상단 서식명 표기 (요구사항 4) -->
+          <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
+          
+          <!-- 문서 제목 (요구사항 4) -->
+          <div class="doc-title">국내여비 정산 신청서</div>
 
-        <table class="report-table">
-          <colgroup>
-            <col width="16%">
-            <col width="17%">
-            <col width="16%">
-            <col width="17%">
-            <col width="17%">
-            <col width="17%">
-          </colgroup>
-          <tbody>
-            <!-- 기본정보 -->
-            <tr>
-              <th>소 속</th>
-              <td>
-                <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
-              </td>
-              <th>직급(직위)</th>
-              <td>
-                <span id="viewPosition" class="cell-auto-fit">교사/주무관</span>
-              </td>
-              <th>성 명</th>
-              <td>
-                <span id="viewName">김교육</span>
-              </td>
-            </tr>
-            <!-- 출장 일정 -->
-            <tr>
-              <th rowspan="2">출장(부임)<br>일 정</th>
-              <th>일 시</th>
-              <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
-                2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
-              </td>
-            </tr>
-            <tr>
-              <th>출장(부임)지</th>
-              <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
-            </tr>
+          <table class="report-table">
+            <colgroup>
+              <col width="16%">
+              <col width="17%">
+              <col width="16%">
+              <col width="17%">
+              <col width="17%">
+              <col width="17%">
+            </colgroup>
+            <tbody>
+              <!-- 기본정보 -->
+              <tr>
+                <th>소 속</th>
+                <td>
+                  <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
+                </td>
+                <th>직급(직위)</th>
+                <td>
+                  <span id="viewPosition" class="cell-auto-fit">교사/주무관</span>
+                </td>
+                <th>성 명</th>
+                <td>
+                  <span id="viewName">김교육</span>
+                </td>
+              </tr>
+              <!-- 출장 일정 -->
+              <tr>
+                <th rowspan="2">출장(부임)<br>일 정</th>
+                <th>일 시</th>
+                <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
+                  2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
+                </td>
+              </tr>
+              <tr>
+                <th>출장(부임)지</th>
+                <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
+              </tr>
 
-            <!-- 식비 -->
-            <tr>
-              <th>식 비</th>
-              <th>단 가</th>
-              <td id="viewMealUnit">25,000</td>
-              <th>지급일수</th>
-              <td id="viewMealDays">2일</td>
-              <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
-            </tr>
+              <!-- 식비 -->
+              <tr>
+                <th>식 비</th>
+                <th>단 가</th>
+                <td id="viewMealUnit">25,000</td>
+                <th>지급일수</th>
+                <td id="viewMealDays">2일</td>
+                <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
+              </tr>
 
-            <!-- 일비 -->
-            <tr>
-              <th>일 비</th>
-              <th>단 가</th>
-              <td id="viewDailyUnit">25,000</td>
-              <th>지급일수</th>
-              <td id="viewDailyDays">2일</td>
-              <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
-            </tr>
+              <!-- 일비 -->
+              <tr>
+                <th>일 비</th>
+                <th>단 가</th>
+                <td id="viewDailyUnit">25,000</td>
+                <th>지급일수</th>
+                <td id="viewDailyDays">2일</td>
+                <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
+              </tr>
 
-            <!-- 숙박비 -->
-            <tr>
-              <th>숙 박 비</th>
-              <th>단 가</th>
-              <td id="viewLodgingUnit">100,000</td>
-              <th>지급일수</th>
-              <td id="viewLodgingDays">1박</td>
-              <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
-            </tr>
+              <!-- 숙박비 -->
+              <tr>
+                <th>숙 박 비</th>
+                <th>단 가</th>
+                <td id="viewLodgingUnit">100,000</td>
+                <th>지급일수</th>
+                <td id="viewLodgingDays">1박</td>
+                <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
+              </tr>
 
-            <!-- 운임 헤더 -->
-            <tr>
-              <th rowspan="5" id="viewFareRowspan">운 임</th>
-              <th>일 자</th>
-              <th>교통편</th>
-              <th>출발지</th>
-              <th>도착지</th>
-              <th>금 액</th>
-            </tr>
-          </tbody>
-          <tbody id="viewFareTbody"></tbody>
-          <tbody>
-            <tr>
-              <th colspan="2">합 계</th>
-              <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
-                법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
-                개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
-                소계: <span id="viewTotalSum">0</span>원
-              </td>
-            </tr>
-            <tr>
-              <th colspan="2">여비지급액(개인청구액)</th>
-              <td colspan="4" class="text-right p-lr-8" style="font-size:14.5px; font-weight: bold; color:#000;">
-                금 <span id="viewFinalClaim">0</span> 원
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              <!-- 운임 헤더 -->
+              <tr>
+                <th rowspan="5" id="viewFareRowspan">운 임</th>
+                <th>일 자</th>
+                <th>교통편</th>
+                <th>출발지</th>
+                <th>도착지</th>
+                <th>금 액</th>
+              </tr>
+            </tbody>
+            <tbody id="viewFareTbody"></tbody>
+            <tbody>
+              <tr>
+                <th colspan="2">합 계</th>
+                <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
+                  법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
+                  개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
+                  소계: <span id="viewTotalSum">0</span>원
+                </td>
+              </tr>
+              <!-- 여비지급액 및 조정사유 산출근거 반영 (요구사항 1) -->
+              <tr>
+                <th colspan="2">여비지급액<br>(개인청구액)</th>
+                <td colspan="4" class="text-right p-lr-8">
+                  <div style="font-size:14px; font-weight: bold; color:#000;">
+                    금 <span id="viewFinalClaim">319,600</span> 원
+                  </div>
+                  <div class="calc-reason-note" id="viewReasonNote">
+                    [사유 및 산출근거] 기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-        <!-- 규정 문구 및 서명란 -->
-        <div class="statement-box">
-          <div class="rule-text">
-            「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+          <!-- 규정 문구 및 서명란 -->
+          <div class="statement-box">
+            <div class="rule-text">
+              「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+            </div>
+            <div class="attach-text">
+              첨부 : 신용카드 매출전표 등 1부
+            </div>
+            <div class="sign-date" id="viewSignDate">
+              2026년 09월 04일
+            </div>
+            <div class="sign-name">
+              신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
+            </div>
           </div>
-          <div class="attach-text">
-            첨부 : 신용카드 매출전표 등 1부
-          </div>
-          <div class="sign-date" id="viewSignDate">
-            2026년 09월 04일
-          </div>
-          <div class="sign-name">
-            신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
-          </div>
+        </div>
+
+        <!-- 인사혁신처 예규 기준 안내 각주 (요구사항 5) -->
+        <div class="doc-footer-legal">
+          ※ 본 계산은 「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.) 기준에 따라 산정되었습니다.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 통합 푸터 (예산분석기와 통일) -->
+  <!-- 푸터 -->
   <div class="footer">
     <p style="margin: 0 0 4px 0; font-weight: 700; color: #334155;">
       Designed & Developed by 윤상 &copy; 2026. All Rights Reserved.
@@ -825,7 +892,7 @@
 </div>
 
 <script>
-  /* [보안 제어: 불펌 및 F12 방지] - 예산분석기와 통일 */
+  /* 불펌 및 F12 방지 */
   document.addEventListener('contextmenu', function(e) {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     e.preventDefault();
@@ -849,7 +916,7 @@
     carDest: { x: "127.0588", y: "37.5126" }
   };
 
-  /* 모달 검색 제어 */
+  /* 검색 모달 제어 */
   function openSearchModal(targetId) {
     currentSearchTarget = targetId;
     const targetVal = document.getElementById(targetId).value;
@@ -1066,7 +1133,6 @@
     calcAll();
   }
 
-  /* 추천기능: 첫 행 기반 왕복 귀임 행 자동 복제 */
   function duplicateRoundTripFare() {
     const dates = document.querySelectorAll('.f-date');
     const trans = document.querySelectorAll('.f-trans');
@@ -1112,7 +1178,7 @@
     calcAll();
   }
 
-  /* 여비 계산 및 숙박비 한도 산정 (30% 체크 여부 반영) */
+  /* 여비 계산 로직 */
   function calcAll() {
     const userGrade = document.getElementById('userGrade').value;
     const regionType = document.getElementById('regionType').value;
@@ -1131,7 +1197,7 @@
     const calcDaily = dailyDays * dailyUnitPrice;
     document.getElementById('customDailyTotal').value = calcDaily;
 
-    // 3. 숙박비 (체크 해제 시 순수 상한 100,000원 적용)
+    // 3. 숙박비
     const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
     const lodgingExpense = parseInt(document.getElementById('lodgingExpense').value) || 0;
     const lodgingType = document.getElementById('lodgingType').value;
@@ -1230,23 +1296,42 @@
     document.getElementById('viewCorpSum').innerText = corpSum.toLocaleString();
     document.getElementById('viewPersonalSum').innerText = personalSum.toLocaleString();
     document.getElementById('viewTotalSum').innerText = grandTotal.toLocaleString();
-    document.getElementById('viewFinalClaim').innerText = personalSum.toLocaleString();
+
+    // 최종 개인 청구액 기본값 동기화
+    document.getElementById('manualFinalClaim').value = personalSum;
+    applyFinalManualAdjustment();
 
     updateReport();
     updateCarPreview();
+  }
+
+  /* 요구사항 1: 최종 청구액 및 사유 산출근거 반영 */
+  function applyFinalManualAdjustment() {
+    const finalVal = parseInt(document.getElementById('manualFinalClaim').value) || 0;
+    const reasonText = document.getElementById('manualReason').value.trim();
+
+    document.getElementById('viewFinalClaim').innerText = finalVal.toLocaleString();
+    const reasonNoteEl = document.getElementById('viewReasonNote');
+    if (reasonText) {
+      reasonNoteEl.innerText = `[조정사유 및 산출근거] ${reasonText}`;
+      reasonNoteEl.style.display = 'block';
+    } else {
+      reasonNoteEl.innerText = '';
+      reasonNoteEl.style.display = 'none';
+    }
   }
 
   function adjustFontSize(element) {
     if (!element) return;
     const textLength = element.innerText.trim().length;
     if (textLength >= 12) {
-      element.style.fontSize = "9.5px";
+      element.style.fontSize = "9px";
     } else if (textLength >= 10) {
-      element.style.fontSize = "10.5px";
+      element.style.fontSize = "10px";
     } else if (textLength >= 8) {
-      element.style.fontSize = "11.5px";
+      element.style.fontSize = "11px";
     } else {
-      element.style.fontSize = "12.5px";
+      element.style.fontSize = "12px";
     }
   }
 
@@ -1287,7 +1372,6 @@
     }
   }
 
-  /* 추천기능: 기안문 및 메신저 보고용 요약 텍스트 클립보드 복사 */
   function copySummaryText() {
     const dept = document.getElementById('dept').value;
     const pos = document.getElementById('position').value;
@@ -1297,6 +1381,7 @@
     const finalClaim = document.getElementById('viewFinalClaim').innerText;
     const corpSum = document.getElementById('viewCorpSum').innerText;
     const totalSum = document.getElementById('viewTotalSum').innerText;
+    const reason = document.getElementById('manualReason').value.trim();
 
     const mealTotal = document.getElementById('viewMealTotal').innerText;
     const dailyTotal = document.getElementById('viewDailyTotal').innerText;
@@ -1311,7 +1396,7 @@
   - 식비: ${mealTotal}
   - 일비: ${dailyTotal}
   - 숙박비: ${lodgingTotal}
-  - 운임: ${document.getElementById('viewCorpSum').innerText !== '0' ? '법인카드/개인 결제분 포함' : '개인 결제분 포함'}`;
+  - 산출근거: ${reason || '기준 정액 및 영수 실비 청구'}`;
 
     navigator.clipboard.writeText(summary).then(() => {
       alert("메신저용 요약 텍스트가 클립보드에 복사되었습니다.\n\n[Ctrl + V]로 붙여넣어 사용하세요.");
@@ -1320,7 +1405,6 @@
     });
   }
 
-  /* 추천기능: 내 인적사항 브라우저 저장/불러오기 */
   function saveUserDefault() {
     const dept = document.getElementById('dept').value;
     const pos = document.getElementById('position').value;
@@ -1340,6 +1424,7 @@
     if (name) document.getElementById('name').value = name;
   }
 
+  /* A4 1페이지 정밀 다운로드 */
   function downloadPDF() {
     const dept = document.getElementById('dept').value.trim() || "소속기관명";
     const name = document.getElementById('name').value.trim() || "성명";
@@ -1347,10 +1432,10 @@
 
     const element = document.getElementById('pdf-container');
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin: 0, /* 컨테이너 자체 패딩 16mm가 정확히 A4 마진 역할 수행 */
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
