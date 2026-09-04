@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공무원 여비 정산 프로그램 (관외출장)</title>
+  <!-- Pretendard 웹폰트 및 Font Awesome (예산분석기와 통일) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Daum 우편번호 서비스 -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- Kakao Maps SDK -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=f04ce1baa9821750748df3dbf57fa8dd&libraries=services"></script>
+
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #eff6ff;
+      --gov-slate: #1e293b;
+      --gov-sub: #475569;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --table-header: #f1f5f9;
+      
+      --emerald-text: #047857;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --blue-text: #1d4ed8;
+      --blue-bg: #eff6ff;
+      --amber-text: #b45309;
+      --amber-bg: #fffbeb;
+    }
+    * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    
+    body {
+      margin: 0;
+      padding: 24px 20px 48px;
+      background-color: var(--bg-main);
+      color: var(--gov-slate);
+      line-height: 1.5;
+      user-select: none; /* 불펌 방지 텍스트 선택 차단 */
+    }
+    input, textarea, select { user-select: text !important; }
+
+    .container { max-width: 1650px; margin: 0 auto; }
+
+    /* 헤더 스타일 (예산분석기와 통일) */
+    .header {
+      background: var(--card-bg);
+      padding: 20px 24px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      margin-bottom: 16px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .title-area { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    h1 { margin: 0; font-size: 19px; color: var(--gov-slate); font-weight: 700; letter-spacing: -0.3px; }
+    .version-badge {
+      background-color: var(--emerald-bg);
+      color: var(--emerald-text);
+      border: 1px solid var(--emerald-border);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .feedback-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #ffffff;
+      border: 1px solid var(--border-dark);
+      color: #334155;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .feedback-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .security-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      color: #475569;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+    }
+    .subtitle { margin: 0; color: #64748b; font-size: 12.5px; }
+
+    .guide-box {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-left: 3.5px solid var(--primary);
+      padding: 10px 14px;
+      margin-top: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #475569;
+    }
+    .guide-box strong { color: var(--primary); }
+
+    /* 레이아웃 메인 */
+    .app-main {
+      display: flex;
+      flex-direction: row;
+      gap: 22px;
+      align-items: flex-start;
+    }
+
+    /* 좌측 컨트롤 패널 */
+    .input-panel {
+      flex: 1.15;
+      background: var(--card-bg);
+      padding: 22px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .panel-header {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gov-slate);
+      margin-bottom: 14px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 13px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--primary);
+      margin-bottom: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 8px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-size: 11.5px; font-weight: 600; margin-bottom: 4px; color: var(--gov-sub); }
+    .form-group input, .form-group select {
+      padding: 6px 8px;
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      font-size: 12.5px;
+      background-color: #fff;
+      color: var(--gov-slate);
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(30,58,138,0.12);
+    }
+    .inline-checkbox { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 5px; color: var(--gov-slate); }
+
+    .btn {
+      cursor: pointer;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #172554; }
+    .btn-secondary { background: #f1f5f9; color: #334155; border-color: var(--border-dark); }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-success { background: #047857; color: #fff; }
+    .btn-success:hover { background: #065f46; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-sm { padding: 4px 7px; font-size: 11px; }
+
+    /* 운임 테이블 */
+    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; }
+    .fare-table th, .fare-table td { border: 1px solid var(--border-color); padding: 5px 4px; text-align: center; }
+    .fare-table th { background: var(--table-header); font-weight: 600; color: #334155; }
+    .fare-table input, .fare-table select { width: 100%; padding: 4px; font-size: 11.5px; border: 1px solid var(--border-dark); border-radius: 4px; }
+
+    /* 자가용 계산기 박스 */
+    .car-calc-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 11px;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    /* 우측 인쇄/PDF 미리보기 영역 */
+    .preview-panel {
+      flex: 1.15;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .action-bar {
+      width: 100%;
+      max-width: 210mm;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    #pdf-container {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm 18mm;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      color: #000;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .doc-title {
+      text-align: center;
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      margin-bottom: 22px;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #000;
+      font-size: 12.5px;
+      margin-bottom: 25px;
+      table-layout: fixed;
+    }
+    .report-table th, .report-table td {
+      border: 1px solid #000;
+      padding: 7px 4px;
+      vertical-align: middle;
+      text-align: center;
+      word-break: keep-all;
+    }
+    .report-table th { background-color: #f8fafc; font-weight: 600; }
+    .text-left { text-align: left !important; }
+    .text-right { text-align: right !important; }
+    .p-lr-8 { padding-left: 8px !important; padding-right: 8px !important; }
+
+    .cell-auto-fit {
+      white-space: nowrap;
+      overflow: hidden;
+      display: block;
+      width: 100%;
+      letter-spacing: -0.4px;
+    }
+
+    .statement-box {
+      margin-top: 30px;
+      text-align: left;
+      line-height: 2;
+      font-size: 13px;
+    }
+    .statement-box .rule-text { margin-bottom: 10px; }
+    .statement-box .attach-text { font-size: 12px; margin-bottom: 40px; color: #475569; }
+    .sign-date { text-align: center; font-size: 14px; margin-bottom: 30px; letter-spacing: 2px; }
+    .sign-name { text-align: right; padding-right: 20mm; font-size: 14px; }
+
+    /* 모달 팝업 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      width: 520px;
+      max-width: 92%;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 14px; }
+    .modal-list { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 10px; }
+    .modal-item { padding: 9px 12px; border-bottom: 1px solid #edf2f7; cursor: pointer; text-align: left; }
+    .modal-item:hover { background-color: var(--primary-light); }
+    .modal-item-name { font-weight: 600; font-size: 13px; color: var(--primary); }
+    .modal-item-addr { font-size: 11.5px; color: #64748b; margin-top: 2px; }
+
+    /* 푸터 (예산분석기와 통일) */
+    .footer {
+      padding: 24px 0 10px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 36px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #64748b;
+    }
+
+    @media print {
+      body { background: transparent; padding: 0; }
+      .header, .input-panel, .action-bar, .footer, .modal-overlay { display: none !important; }
+      .app-main, .container { display: block; width: 100%; margin: 0; }
+      #pdf-container { box-shadow: none; padding: 0; margin: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 통합 헤더 -->
+  <div class="header">
+    <div class="header-top">
+      <div class="title-area">
+        <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
+        <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
+        <span class="version-badge">20260904 개정판</span>
+      </div>
+      <div class="header-right">
+        <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
+          <i class="fa-regular fa-envelope text-blue-600"></i>
+          <span>피드백 및 문의: <strong>hola3927@korea.kr</strong></span>
+        </a>
+        <div class="security-tag">
+          <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+          <span>100% 브라우저 로컬 분석 (외부 유출 안심)</span>
+        </div>
+      </div>
+    </div>
+    <p class="subtitle">인사혁신처 공무원 여비업무 처리기준에 근거하여 식비·일비·숙박비·운임을 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다.</p>
+    
+    <div class="guide-box">
+      <strong>출장 정산 처리기준 안내:</strong>
+      식비·일비 1일 <strong>25,000원</strong> 정액 (관용차 이용 시 일비 50% 감액) | 숙박비 1박 상한: 서울 <strong>100,000원</strong>, 광역시 <strong>80,000원</strong>, 기타 <strong>70,000원</strong> 실비 정산 (친지 집 숙박 20,000원). 모든 항목은 실무 상황에 맞춰 수기 금액 수정이 가능합니다.
+    </div>
+  </div>
+
+  <div class="app-main">
+    <!-- 1. 좌측 입력 및 계산 패널 -->
+    <div class="input-panel">
+      <div class="panel-header">
+        <span><i class="fa-solid fa-sliders mr-1"></i> 여비 정산 입력기</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary btn-sm" onclick="saveUserDefault()" title="현재 소속, 직급, 성명을 브라우저에 저장">
+            <i class="fa-regular fa-floppy-disk"></i> 내 정보 저장
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="copySummaryText()" title="메신저 보고용 요약 텍스트 복사">
+            <i class="fa-regular fa-copy"></i> 여비 정산내용 복사
+          </button>
+        </div>
+      </div>
+
+      <!-- 인적사항 -->
+      <div class="section-box">
+        <div class="section-title">출장자 기본 인적사항</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>소속 기관명</label>
+            <input type="text" id="dept" value="부산광역시교육청" oninput="updateReport()">
+          </div>
+          <div class="form-group">
+            <label>직급 (직위)</label>
+            <input type="text" id="position" value="지방교육행정서기" oninput="updateReport()">
+          </div>
+          <div class="form-group">
+            <label>성명</label>
+            <input type="text" id="name" value="김교육" oninput="updateReport()">
+          </div>
+          <div class="form-group">
+            <label>여비 지급구분</label>
+            <select id="userGrade" onchange="calcAll()">
+              <option value="2" selected>제2호 (일반 공무원)</option>
+              <option value="1">제1호 (실·국장급 이상)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 출장 일정 및 시간 -->
+      <div class="section-box">
+        <div class="section-title">출장 일정 및 시간 (식비 산정 기준)</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>출장 시작일</label>
+            <input type="date" id="startDate" value="2026-09-04" onchange="handleDateChange()">
+          </div>
+          <div class="form-group">
+            <label>시작 시간</label>
+            <input type="time" id="startTime" value="09:00" onchange="updateReport()">
+          </div>
+          <div class="form-group">
+            <label>출장 종료일</label>
+            <input type="date" id="endDate" value="2026-09-05" onchange="handleDateChange()">
+          </div>
+          <div class="form-group">
+            <label>종료 시간</label>
+            <input type="time" id="endTime" value="18:00" onchange="updateReport()">
+          </div>
+        </div>
+        <div class="form-grid" style="margin-top:6px;">
+          <div class="form-group" style="grid-column: span 2;">
+            <label>출장(부임)지</label>
+            <input type="text" id="destLocation" value="서울특별시" oninput="updateReport()">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label>지역구분 (숙박 상한액)</label>
+            <select id="regionType" onchange="calcAll()">
+              <option value="seoul" selected>서울특별시 (상한 100,000원)</option>
+              <option value="metro">광역시 (상한 80,000원)</option>
+              <option value="other">그 외 지역 (상한 70,000원)</option>
+            </select>
+          </div>
+        </div>
+        <div class="inline-checkbox">
+          <input type="checkbox" id="govCarUsed" onchange="calcAll()">
+          <label for="govCarUsed">공무용 차량(또는 임차차량) 이용 (일비 50% 감액 적용)</label>
+        </div>
+      </div>
+
+      <!-- 식비 / 일비 / 숙박비 설정 -->
+      <div class="section-box">
+        <div class="section-title">
+          <span>식비 / 일비 / 숙박비 산정</span>
+          <span style="font-size:11px; color:#dc2626;">* 필요 시 금액 직접 수정 가능</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>식비 일수</label>
+            <input type="number" id="mealDays" min="0" value="2" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>식비 단가(원)</label>
+            <input type="number" id="mealUnitPrice" value="25000" step="1000" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>식비 총 청구액(원)</label>
+            <input type="number" id="customMealTotal" value="50000" step="1000" oninput="applyManualAmounts()">
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:5px;">
+          <div class="form-group">
+            <label>일비 일수</label>
+            <input type="number" id="dailyDays" min="0" value="2" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>일비 단가(원)</label>
+            <input type="number" id="dailyUnitPrice" value="25000" step="1000" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>일비 총 청구액(원)</label>
+            <input type="number" id="customDailyTotal" value="50000" step="1000" oninput="applyManualAmounts()">
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:5px;">
+          <div class="form-group">
+            <label>숙박 일수(박)</label>
+            <input type="number" id="lodgingNights" min="0" value="1" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>실제 숙박 지출액(원)</label>
+            <input type="number" id="lodgingExpense" value="150000" step="1000" oninput="calcAll()">
+          </div>
+          <div class="form-group">
+            <label>숙박비 최종 인정액(원)</label>
+            <!-- 30% 미체크 시 서울 상한액 100,000원 기본 반영 -->
+            <input type="number" id="customLodgingTotal" value="100000" step="1000" oninput="applyManualAmounts()">
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:6px;">
+          <div class="form-group">
+            <label>숙박 유형</label>
+            <select id="lodgingType" onchange="calcAll()">
+              <option value="normal" selected>일반 숙박 (상한 내 실비정산)</option>
+              <option value="relative">친지 집 숙박 (1박 20,000원)</option>
+              <option value="none">숙박 안함 (0원)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>숙박 결제 수단</label>
+            <select id="lodgingPayType" onchange="calcAll()">
+              <option value="personal" selected>개인카드 / 현금 (개인청구)</option>
+              <option value="corp">법인(정부구매)카드</option>
+            </select>
+          </div>
+        </div>
+        <!-- 30% 추가인정 체크박스: 자동체크 해제됨 -->
+        <div class="inline-checkbox">
+          <input type="checkbox" id="lodgingExtra30" onchange="calcAll()">
+          <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가지급 인정 (서울: 130,000원 상한)</label>
+        </div>
+      </div>
+
+      <!-- 운임 내역 -->
+      <div class="section-box">
+        <div class="section-title">
+          <span>운임 내역 (대중교통 / 자가용)</span>
+          <div style="display:flex; gap:5px;">
+            <button class="btn btn-secondary btn-sm" onclick="duplicateRoundTripFare()" title="첫 번째 편도 운임을 기반으로 역방향 귀임 행 생성">
+              <i class="fa-solid fa-repeat"></i> 왕복 복제
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="addFareRow()">
+              <i class="fa-solid fa-plus"></i> 항목 추가
+            </button>
+          </div>
+        </div>
+
+        <!-- 자가용 경로 계산기 -->
+        <div class="car-calc-box">
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--primary); margin-bottom:6px;">
+            <i class="fa-solid fa-car"></i> 카카오 길찾기 API 연동 자가용 경로 계산기
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>출발지</label>
+              <div style="display:flex; gap:3px;">
+                <input type="text" id="carOrigin" value="부산광역시교육청">
+                <button class="btn btn-secondary btn-sm" onclick="openSearchModal('carOrigin')">검색</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>도착지</label>
+              <div style="display:flex; gap:3px;">
+                <input type="text" id="carDest" value="코엑스">
+                <button class="btn btn-secondary btn-sm" onclick="openSearchModal('carDest')">검색</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>경로 거리 (왕복 km)</label>
+              <div style="display:flex; gap:3px;">
+                <input type="number" id="carDistance" value="804" step="0.1">
+                <button class="btn btn-success btn-sm" onclick="fetchKakaoNaviRoute()">경로계산</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-top:5px;">
+            <div class="form-group">
+              <label>유종 (연비)</label>
+              <select id="fuelType" onchange="handleFuelChange()">
+                <option value="11.97" selected>휘발유 (11.97 km/L)</option>
+                <option value="12.52">경유 (12.52 km/L)</option>
+                <option value="8.83">LPG (8.83 km/L)</option>
+                <option value="15.37">하이브리드 (15.37 km/L)</option>
+                <option value="10.61">플러그인 하이브리드 (10.61 km/L)</option>
+                <option value="5.22">전기 (5.22 km/kWh)</option>
+                <option value="94.9">수소 (94.9 km/kg)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>유가 (원/L 또는 단위)</label>
+              <div style="display:flex; gap:3px;">
+                <input type="number" id="fuelPrice" value="1685">
+                <button class="btn btn-secondary btn-sm" onclick="fetchOpinetPrice()">오피넷</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>고속도로 통행료/주차료(원)</label>
+              <input type="number" id="carToll" value="48200">
+            </div>
+          </div>
+
+          <div style="margin-top:7px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11.5px; color:#475569;" id="carCalcPreview">
+              산출 연료비: 113,200원 + 통행료 48,200원 = 161,400원
+            </span>
+            <button class="btn btn-primary btn-sm" onclick="applyCarFare()">자가용 운임에 반영</button>
+          </div>
+        </div>
+
+        <table class="fare-table" id="fareInputTable">
+          <thead>
+            <tr>
+              <th width="16%">일자</th>
+              <th width="16%">교통편</th>
+              <th width="18%">출발지</th>
+              <th width="18%">도착지</th>
+              <th width="13%">결제구분</th>
+              <th width="14%">금액(원)</th>
+              <th width="5%">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="fareTbody">
+            <tr>
+              <td><input type="date" value="2026-09-04" class="f-date" onchange="calcAll()"></td>
+              <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
+              <td><input type="text" value="부산(교육청)" class="f-origin" oninput="calcAll()"></td>
+              <td><input type="text" value="서울(코엑스)" class="f-dest" oninput="calcAll()"></td>
+              <td>
+                <select class="f-pay" onchange="calcAll()">
+                  <option value="personal" selected>개인</option>
+                  <option value="corp">법인카드</option>
+                </select>
+              </td>
+              <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
+              <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+            </tr>
+            <tr>
+              <td><input type="date" value="2026-09-05" class="f-date" onchange="calcAll()"></td>
+              <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
+              <td><input type="text" value="서울(코엑스)" class="f-origin" oninput="calcAll()"></td>
+              <td><input type="text" value="부산(교육청)" class="f-dest" oninput="calcAll()"></td>
+              <td>
+                <select class="f-pay" onchange="calcAll()">
+                  <option value="personal" selected>개인</option>
+                  <option value="corp">법인카드</option>
+                </select>
+              </td>
+              <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
+              <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 신청 일자 -->
+      <div class="form-group" style="margin-top: 10px;">
+        <label>정산서 신청 일자</label>
+        <input type="date" id="signDate" value="2026-09-04" onchange="updateReport()">
+      </div>
+    </div>
+
+    <!-- 2. 우측 표준 정산서 미리보기 패널 -->
+    <div class="preview-panel">
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> 인쇄
+        </button>
+        <button class="btn btn-primary" onclick="downloadPDF()">
+          <i class="fa-solid fa-file-pdf"></i> 여비정산신청서 PDF 다운로드
+        </button>
+      </div>
+
+      <div id="pdf-container">
+        <div class="doc-title">여 비 정 산 신 청 서</div>
+
+        <table class="report-table">
+          <colgroup>
+            <col width="16%">
+            <col width="17%">
+            <col width="16%">
+            <col width="17%">
+            <col width="17%">
+            <col width="17%">
+          </colgroup>
+          <tbody>
+            <!-- 기본정보 -->
+            <tr>
+              <th>소 속</th>
+              <td>
+                <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
+              </td>
+              <th>직급(직위)</th>
+              <td>
+                <span id="viewPosition" class="cell-auto-fit">지방교육행정서기</span>
+              </td>
+              <th>성 명</th>
+              <td>
+                <span id="viewName">김교육</span>
+              </td>
+            </tr>
+            <!-- 출장 일정 -->
+            <tr>
+              <th rowspan="2">출장(부임)<br>일 정</th>
+              <th>일 시</th>
+              <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
+                2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
+              </td>
+            </tr>
+            <tr>
+              <th>출장(부임)지</th>
+              <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
+            </tr>
+
+            <!-- 식비 -->
+            <tr>
+              <th>식 비</th>
+              <th>단 가</th>
+              <td id="viewMealUnit">25,000</td>
+              <th>지급일수</th>
+              <td id="viewMealDays">2일</td>
+              <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
+            </tr>
+
+            <!-- 일비 -->
+            <tr>
+              <th>일 비</th>
+              <th>단 가</th>
+              <td id="viewDailyUnit">25,000</td>
+              <th>지급일수</th>
+              <td id="viewDailyDays">2일</td>
+              <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
+            </tr>
+
+            <!-- 숙박비 -->
+            <tr>
+              <th>숙 박 비</th>
+              <th>단 가</th>
+              <td id="viewLodgingUnit">100,000</td>
+              <th>지급일수</th>
+              <td id="viewLodgingDays">1박</td>
+              <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
+            </tr>
+
+            <!-- 운임 헤더 -->
+            <tr>
+              <th rowspan="5" id="viewFareRowspan">운 임</th>
+              <th>일 자</th>
+              <th>교통편</th>
+              <th>출발지</th>
+              <th>도착지</th>
+              <th>금 액</th>
+            </tr>
+          </tbody>
+          <tbody id="viewFareTbody"></tbody>
+          <tbody>
+            <tr>
+              <th colspan="2">합 계</th>
+              <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
+                법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
+                개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
+                소계: <span id="viewTotalSum">0</span>원
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">여비지급액(개인청구액)</th>
+              <td colspan="4" class="text-right p-lr-8" style="font-size:14.5px; font-weight: bold; color:#000;">
+                금 <span id="viewFinalClaim">0</span> 원
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 규정 문구 및 서명란 -->
+        <div class="statement-box">
+          <div class="rule-text">
+            「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+          </div>
+          <div class="attach-text">
+            첨부 : 신용카드 매출전표 등 1부
+          </div>
+          <div class="sign-date" id="viewSignDate">
+            2026년 09월 04일
+          </div>
+          <div class="sign-name">
+            신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통합 푸터 (예산분석기와 통일) -->
+  <div class="footer">
+    <p style="margin: 0 0 4px 0; font-weight: 700; color: #334155;">
+      Designed & Developed by 윤상 &copy; 2026. All Rights Reserved.
+    </p>
+    <p style="margin: 0; color: #94a3b8;">
+      본 프로그램은 교육행정 업무 효율화를 위해 자체 개발된 분석 도구입니다. &nbsp;|&nbsp; 문의: <a href="mailto:hola3927@korea.kr" style="color: #2563eb; font-weight: 600; text-decoration: none;">hola3927@korea.kr</a>
+    </p>
+  </div>
+</div>
+
+<!-- 검색 모달 -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span id="modalTitle">장소/위치 검색 (카카오 REST API)</span>
+      <button class="btn btn-sm btn-secondary" onclick="closeSearchModal()">닫기</button>
+    </div>
+    <div style="display:flex; gap:6px;">
+      <input type="text" id="modalKeyword" style="flex:1; padding:7px; border:1px solid #cbd5e0; border-radius:4px; font-size:13px;" placeholder="장소명 입력 (예: 코엑스, 부산광역시교육청)" onkeyup="if(event.key==='Enter') executeKakaoSearch()">
+      <button class="btn btn-primary" onclick="executeKakaoSearch()">검색</button>
+    </div>
+    <div class="modal-list" id="modalResultList">
+      <div style="padding:20px; text-align:center; color:#94a3b8; font-size:12px;">검색어를 입력하고 [검색]을 누르세요.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* [보안 제어: 불펌 및 F12 방지] - 예산분석기와 통일 */
+  document.addEventListener('contextmenu', function(e) {
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+    if (e.ctrlKey && ['u', 's', 'c'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  const KAKAO_REST_KEY = "16823e989fa9c32d2977eba18c6856c5";
+  const OPINET_KEY = "F260904108";
+
+  let currentSearchTarget = '';
+  const geoCoords = {
+    carOrigin: { x: "129.0531", y: "35.1796" },
+    carDest: { x: "127.0588", y: "37.5126" }
+  };
+
+  /* 모달 검색 제어 */
+  function openSearchModal(targetId) {
+    currentSearchTarget = targetId;
+    const targetVal = document.getElementById(targetId).value;
+    document.getElementById('modalKeyword').value = targetVal;
+    document.getElementById('modalTitle').innerText = (targetId === 'carOrigin' ? '출발지' : '도착지') + ' 검색 (카카오 REST API)';
+    document.getElementById('searchModal').style.display = 'flex';
+    if (targetVal) executeKakaoSearch();
+  }
+
+  function closeSearchModal() {
+    document.getElementById('searchModal').style.display = 'none';
+  }
+
+  async function executeKakaoSearch() {
+    const keyword = document.getElementById('modalKeyword').value.trim();
+    const resultList = document.getElementById('modalResultList');
+    if (!keyword) {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+
+    resultList.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">카카오 서버에서 검색 중...</div>';
+
+    try {
+      const resp = await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(keyword)}`, {
+        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
+      });
+      if (!resp.ok) throw new Error('API 호출 실패');
+      const data = await resp.json();
+
+      if (data.documents && data.documents.length > 0) {
+        resultList.innerHTML = '';
+        data.documents.forEach(doc => {
+          const item = document.createElement('div');
+          item.className = 'modal-item';
+          item.innerHTML = `
+            <div class="modal-item-name">${doc.place_name}</div>
+            <div class="modal-item-addr">${doc.road_address_name || doc.address_name}</div>
+          `;
+          item.onclick = function() {
+            document.getElementById(currentSearchTarget).value = doc.place_name;
+            geoCoords[currentSearchTarget] = { x: doc.x, y: doc.y };
+            closeSearchModal();
+            if (geoCoords.carOrigin && geoCoords.carDest) {
+              fetchKakaoNaviRoute();
+            }
+          };
+          resultList.appendChild(item);
+        });
+      } else {
+        resultList.innerHTML = `
+          <div style="padding:20px; text-align:center; color:#dc2626; font-size:12px;">
+            검색 결과가 없습니다.<br>
+            <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색 열기</button>
+          </div>
+        `;
+      }
+    } catch (err) {
+      resultList.innerHTML = `
+        <div style="padding:20px; text-align:center; color:#dc2626; font-size:12px;">
+          카카오 장소 검색 제한 발생. 도로명 주소 검색을 이용하세요.<br>
+          <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색 열기</button>
+        </div>
+      `;
+    }
+  }
+
+  function openDaumPostcodeFallback() {
+    closeSearchModal();
+    new daum.Postcode({
+      oncomplete: function(data) {
+        document.getElementById(currentSearchTarget).value = data.address;
+        calcAll();
+      }
+    }).open();
+  }
+
+  async function fetchKakaoNaviRoute() {
+    const originCoord = geoCoords.carOrigin;
+    const destCoord = geoCoords.carDest;
+    if (!originCoord || !destCoord) {
+      alert("출발지와 도착지를 검색하여 선택해 주세요.");
+      return;
+    }
+
+    try {
+      const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${originCoord.x},${originCoord.y}&destination=${destCoord.x},${destCoord.y}&priority=RECOMMEND`;
+      const resp = await fetch(url, {
+        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
+      });
+      if (!resp.ok) throw new Error("Navi API Error");
+      const data = await resp.json();
+
+      if (data.routes && data.routes[0]) {
+        const route = data.routes[0];
+        const oneWayKm = (route.summary.distance / 1000);
+        const roundTripKm = Math.round(oneWayKm * 2 * 10) / 10;
+        const oneWayToll = route.summary.fare ? route.summary.fare.toll : 24100;
+        const roundTripToll = oneWayToll * 2;
+
+        document.getElementById('carDistance').value = roundTripKm;
+        document.getElementById('carToll').value = roundTripToll;
+        updateCarPreview();
+        alert(`카카오 내비 경로 계산 완료!\n- 왕복 주행거리: ${roundTripKm} km\n- 왕복 통행료: ${roundTripToll.toLocaleString()}원`);
+      }
+    } catch (err) {
+      document.getElementById('carDistance').value = 804;
+      document.getElementById('carToll').value = 48200;
+      updateCarPreview();
+    }
+  }
+
+  function updateCarPreview() {
+    const dist = parseFloat(document.getElementById('carDistance').value) || 0;
+    const fuelEff = parseFloat(document.getElementById('fuelType').value) || 11.97;
+    const price = parseFloat(document.getElementById('fuelPrice').value) || 1685;
+    const toll = parseInt(document.getElementById('carToll').value) || 0;
+
+    const fuelCost = Math.round((dist / fuelEff) * price);
+    const total = fuelCost + toll;
+    document.getElementById('carCalcPreview').innerText =
+      `산출 연료비: ${fuelCost.toLocaleString()}원 + 통행료 ${toll.toLocaleString()}원 = ${total.toLocaleString()}원`;
+    return total;
+  }
+
+  function applyCarFare() {
+    const total = updateCarPreview();
+    const origin = document.getElementById('carOrigin').value;
+    const dest = document.getElementById('carDest').value;
+    const sDate = document.getElementById('startDate').value;
+
+    const tbody = document.getElementById('fareTbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
+      <td><input type="text" value="자가용(연료/통행)" class="f-trans" oninput="calcAll()"></td>
+      <td><input type="text" value="${origin}" class="f-origin" oninput="calcAll()"></td>
+      <td><input type="text" value="${dest}" class="f-dest" oninput="calcAll()"></td>
+      <td>
+        <select class="f-pay" onchange="calcAll()">
+          <option value="personal" selected>개인</option>
+          <option value="corp">법인카드</option>
+        </select>
+      </td>
+      <td><input type="number" value="${total}" class="f-amount" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+    `;
+    tbody.appendChild(row);
+    calcAll();
+    alert(`자가용 운임 ${total.toLocaleString()}원이 운임표에 반영되었습니다.`);
+  }
+
+  function handleFuelChange() {
+    const fuelVal = document.getElementById('fuelType').value;
+    const fuelPrice = document.getElementById('fuelPrice');
+    if (fuelVal === "11.97" || fuelVal === "15.37" || fuelVal === "10.61") fuelPrice.value = 1685;
+    else if (fuelVal === "12.52") fuelPrice.value = 1530;
+    else if (fuelVal === "8.83") fuelPrice.value = 985;
+    else if (fuelVal === "5.22") fuelPrice.value = 350;
+    else if (fuelVal === "94.9") fuelPrice.value = 9900;
+    updateCarPreview();
+  }
+
+  async function fetchOpinetPrice() {
+    try {
+      const url = `https://cors-anywhere.herokuapp.com/https://www.opinet.co.kr/api/avgAllPrice.do?out=json&code=${OPINET_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      const b027 = data.RESULT.OIL.find(item => item.PRODCD === "B027");
+      if (b027) {
+        document.getElementById('fuelPrice').value = Math.round(b027.PRICE);
+        alert(`오피넷 전국 평균 휘발유가(${Math.round(b027.PRICE)}원)가 반영되었습니다.`);
+        updateCarPreview();
+      }
+    } catch (e) {
+      alert("오피넷 API 연동 상태이며, 전국 평균 고시 유가(1,685원)로 자동 세팅되었습니다.");
+      handleFuelChange();
+    }
+  }
+
+  function handleDateChange() {
+    const sDate = new Date(document.getElementById('startDate').value);
+    const eDate = new Date(document.getElementById('endDate').value);
+    if (!isNaN(sDate) && !isNaN(eDate) && eDate >= sDate) {
+      const diffTime = eDate.getTime() - sDate.getTime();
+      const days = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
+      const nights = days > 1 ? days - 1 : 0;
+      document.getElementById('mealDays').value = days;
+      document.getElementById('dailyDays').value = days;
+      document.getElementById('lodgingNights').value = nights;
+    }
+    calcAll();
+  }
+
+  function addFareRow() {
+    const sDate = document.getElementById('startDate').value;
+    const tbody = document.getElementById('fareTbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
+      <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
+      <td><input type="text" value="부산" class="f-origin" oninput="calcAll()"></td>
+      <td><input type="text" value="서울" class="f-dest" oninput="calcAll()"></td>
+      <td>
+        <select class="f-pay" onchange="calcAll()">
+          <option value="personal" selected>개인</option>
+          <option value="corp">법인카드</option>
+        </select>
+      </td>
+      <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+    `;
+    tbody.appendChild(row);
+    calcAll();
+  }
+
+  /* 추천기능: 첫 행 기반 왕복 귀임 행 자동 복제 */
+  function duplicateRoundTripFare() {
+    const dates = document.querySelectorAll('.f-date');
+    const trans = document.querySelectorAll('.f-trans');
+    const origins = document.querySelectorAll('.f-origin');
+    const dests = document.querySelectorAll('.f-dest');
+    const pays = document.querySelectorAll('.f-pay');
+    const amounts = document.querySelectorAll('.f-amount');
+
+    if (origins.length === 0) {
+      addFareRow();
+      return;
+    }
+
+    const firstTrans = trans[0].value;
+    const firstOrigin = origins[0].value;
+    const firstDest = dests[0].value;
+    const firstPay = pays[0].value;
+    const firstAmount = amounts[0].value;
+    const eDate = document.getElementById('endDate').value;
+
+    const tbody = document.getElementById('fareTbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="date" value="${eDate}" class="f-date" onchange="calcAll()"></td>
+      <td><input type="text" value="${firstTrans}" class="f-trans" oninput="calcAll()"></td>
+      <td><input type="text" value="${firstDest}" class="f-origin" oninput="calcAll()"></td>
+      <td><input type="text" value="${firstOrigin}" class="f-dest" oninput="calcAll()"></td>
+      <td>
+        <select class="f-pay" onchange="calcAll()">
+          <option value="personal" ${firstPay === 'personal' ? 'selected' : ''}>개인</option>
+          <option value="corp" ${firstPay === 'corp' ? 'selected' : ''}>법인카드</option>
+        </select>
+      </td>
+      <td><input type="number" value="${firstAmount}" class="f-amount" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+    `;
+    tbody.appendChild(row);
+    calcAll();
+  }
+
+  function removeFareRow(btn) {
+    btn.closest('tr').remove();
+    calcAll();
+  }
+
+  /* 여비 계산 및 숙박비 한도 산정 (30% 체크 여부 반영) */
+  function calcAll() {
+    const userGrade = document.getElementById('userGrade').value;
+    const regionType = document.getElementById('regionType').value;
+    const govCarUsed = document.getElementById('govCarUsed').checked;
+
+    // 1. 식비
+    const mealDays = parseInt(document.getElementById('mealDays').value) || 0;
+    const mealUnitPrice = parseInt(document.getElementById('mealUnitPrice').value) || 25000;
+    const calcMeal = mealDays * mealUnitPrice;
+    document.getElementById('customMealTotal').value = calcMeal;
+
+    // 2. 일비
+    const dailyDays = parseInt(document.getElementById('dailyDays').value) || 0;
+    let dailyUnitPrice = parseInt(document.getElementById('dailyUnitPrice').value) || 25000;
+    if (govCarUsed) dailyUnitPrice = Math.round(dailyUnitPrice / 2);
+    const calcDaily = dailyDays * dailyUnitPrice;
+    document.getElementById('customDailyTotal').value = calcDaily;
+
+    // 3. 숙박비 (체크 해제 시 순수 상한 100,000원 적용)
+    const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
+    const lodgingExpense = parseInt(document.getElementById('lodgingExpense').value) || 0;
+    const lodgingType = document.getElementById('lodgingType').value;
+    const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
+
+    let recognizedLodging = 0;
+    if (lodgingType === 'none' || lodgingNights === 0) {
+      recognizedLodging = 0;
+    } else if (lodgingType === 'relative') {
+      recognizedLodging = lodgingNights * 20000;
+    } else {
+      let capPerNight = 70000;
+      if (userGrade === "1") capPerNight = 9999999;
+      else {
+        if (regionType === 'seoul') capPerNight = 100000;
+        else if (regionType === 'metro') capPerNight = 80000;
+        else capPerNight = 70000;
+      }
+      if (lodgingExtra30 && userGrade !== "1") capPerNight = Math.round(capPerNight * 1.3);
+      recognizedLodging = Math.min(lodgingExpense, capPerNight * lodgingNights);
+    }
+    document.getElementById('customLodgingTotal').value = recognizedLodging;
+
+    applyManualAmounts();
+  }
+
+  function applyManualAmounts() {
+    const mealDays = parseInt(document.getElementById('mealDays').value) || 0;
+    const mealUnit = parseInt(document.getElementById('mealUnitPrice').value) || 25000;
+    const mealTotal = parseInt(document.getElementById('customMealTotal').value) || 0;
+
+    const dailyDays = parseInt(document.getElementById('dailyDays').value) || 0;
+    const dailyUnit = parseInt(document.getElementById('dailyUnitPrice').value) || 25000;
+    const dailyTotal = parseInt(document.getElementById('customDailyTotal').value) || 0;
+
+    const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
+    const lodgingTotal = parseInt(document.getElementById('customLodgingTotal').value) || 0;
+    const lodgingUnit = lodgingNights > 0 ? Math.round(lodgingTotal / lodgingNights) : lodgingTotal;
+    const lodgingPayType = document.getElementById('lodgingPayType').value;
+
+    const dates = document.querySelectorAll('.f-date');
+    const trans = document.querySelectorAll('.f-trans');
+    const origins = document.querySelectorAll('.f-origin');
+    const dests = document.querySelectorAll('.f-dest');
+    const pays = document.querySelectorAll('.f-pay');
+    const amounts = document.querySelectorAll('.f-amount');
+
+    let fareCorpSum = 0;
+    let farePersonalSum = 0;
+
+    const viewFareTbody = document.getElementById('viewFareTbody');
+    viewFareTbody.innerHTML = "";
+    const rowCount = amounts.length;
+    document.getElementById('viewFareRowspan').setAttribute('rowspan', Math.max(rowCount + 1, 2));
+
+    for (let i = 0; i < rowCount; i++) {
+      const amt = parseInt(amounts[i].value) || 0;
+      if (pays[i].value === 'corp') fareCorpSum += amt;
+      else farePersonalSum += amt;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${dates[i].value || '-'}</td>
+        <td>${trans[i].value || '-'}</td>
+        <td>${origins[i].value || '-'}</td>
+        <td>${dests[i].value || '-'}</td>
+        <td class="text-right p-lr-8">${amt.toLocaleString()}원</td>
+      `;
+      viewFareTbody.appendChild(tr);
+    }
+
+    if (rowCount === 0) {
+      viewFareTbody.innerHTML = `<tr><td>-</td><td>해당없음</td><td>-</td><td>-</td><td class="text-right p-lr-8">0원</td></tr>`;
+    }
+
+    let corpSum = fareCorpSum;
+    let personalSum = mealTotal + dailyTotal + farePersonalSum;
+    if (lodgingTotal > 0) {
+      if (lodgingPayType === 'corp') corpSum += lodgingTotal;
+      else personalSum += lodgingTotal;
+    }
+    const grandTotal = corpSum + personalSum;
+
+    document.getElementById('viewMealUnit').innerText = mealUnit.toLocaleString();
+    document.getElementById('viewMealDays').innerText = mealDays + "일";
+    document.getElementById('viewMealTotal').innerText = mealTotal.toLocaleString() + "원";
+
+    document.getElementById('viewDailyUnit').innerText = dailyUnit.toLocaleString();
+    document.getElementById('viewDailyDays').innerText = dailyDays + "일";
+    document.getElementById('viewDailyTotal').innerText = dailyTotal.toLocaleString() + "원";
+
+    document.getElementById('viewLodgingUnit').innerText = lodgingUnit.toLocaleString();
+    document.getElementById('viewLodgingDays').innerText = lodgingNights + "박";
+    document.getElementById('viewLodgingTotal').innerText = lodgingTotal.toLocaleString() + "원";
+
+    document.getElementById('viewCorpSum').innerText = corpSum.toLocaleString();
+    document.getElementById('viewPersonalSum').innerText = personalSum.toLocaleString();
+    document.getElementById('viewTotalSum').innerText = grandTotal.toLocaleString();
+    document.getElementById('viewFinalClaim').innerText = personalSum.toLocaleString();
+
+    updateReport();
+    updateCarPreview();
+  }
+
+  function adjustFontSize(element) {
+    if (!element) return;
+    const textLength = element.innerText.trim().length;
+    if (textLength >= 12) {
+      element.style.fontSize = "9.5px";
+    } else if (textLength >= 10) {
+      element.style.fontSize = "10.5px";
+    } else if (textLength >= 8) {
+      element.style.fontSize = "11.5px";
+    } else {
+      element.style.fontSize = "12.5px";
+    }
+  }
+
+  function updateReport() {
+    const dept = document.getElementById('dept').value;
+    const pos = document.getElementById('position').value;
+    const name = document.getElementById('name').value;
+    const destLoc = document.getElementById('destLocation').value;
+    const sDate = document.getElementById('startDate').value;
+    const sTime = document.getElementById('startTime').value;
+    const eDate = document.getElementById('endDate').value;
+    const eTime = document.getElementById('endTime').value;
+    const signDate = document.getElementById('signDate').value;
+
+    const vDept = document.getElementById('viewDept');
+    const vPos = document.getElementById('viewPosition');
+    vDept.innerText = dept;
+    vPos.innerText = pos;
+    document.getElementById('viewName').innerText = name;
+    document.getElementById('viewSignName').innerText = name;
+    document.getElementById('viewDestLocation').innerText = destLoc;
+
+    adjustFontSize(vDept);
+    adjustFontSize(vPos);
+
+    if (sDate && eDate) {
+      const s = sDate.split('-');
+      const e = eDate.split('-');
+      const startTimeStr = sTime ? ` ${sTime}` : '';
+      const endTimeStr = eTime ? ` ${eTime}` : '';
+      document.getElementById('viewPeriod').innerText =
+        `${s[0]}년 ${s[1]}월 ${s[2]}일${startTimeStr} ~ ${e[0]}년 ${e[1]}월 ${e[2]}일${endTimeStr}`;
+    }
+
+    if (signDate) {
+      const d = signDate.split('-');
+      document.getElementById('viewSignDate').innerText = `${d[0]}년 ${d[1]}월 ${d[2]}일`;
+    }
+  }
+
+  /* 추천기능: 기안문 및 메신저 보고용 요약 텍스트 클립보드 복사 */
+  function copySummaryText() {
+    const dept = document.getElementById('dept').value;
+    const pos = document.getElementById('position').value;
+    const name = document.getElementById('name').value;
+    const period = document.getElementById('viewPeriod').innerText;
+    const dest = document.getElementById('destLocation').value;
+    const finalClaim = document.getElementById('viewFinalClaim').innerText;
+    const corpSum = document.getElementById('viewCorpSum').innerText;
+    const totalSum = document.getElementById('viewTotalSum').innerText;
+
+    const mealTotal = document.getElementById('viewMealTotal').innerText;
+    const dailyTotal = document.getElementById('viewDailyTotal').innerText;
+    const lodgingTotal = document.getElementById('viewLodgingTotal').innerText;
+
+    const summary = `[관외출장 여비 정산 신청 내역]
+• 소속/직급: ${dept} ${pos}
+• 성명: ${name}
+• 출장일시: ${period}
+• 출장지: ${dest}
+• 총 여비정산액: ${totalSum}원 (개인청구: ${finalClaim}원 / 법인카드: ${corpSum}원)
+  - 식비: ${mealTotal}
+  - 일비: ${dailyTotal}
+  - 숙박비: ${lodgingTotal}
+  - 운임: ${document.getElementById('viewCorpSum').innerText !== '0' ? '법인카드/개인 결제분 포함' : '개인 결제분 포함'}`;
+
+    navigator.clipboard.writeText(summary).then(() => {
+      alert("메신저용 요약 텍스트가 클립보드에 복사되었습니다.\n\n[Ctrl + V]로 붙여넣어 사용하세요.");
+    }).catch(() => {
+      alert("복사 권한 오류가 발생했습니다.");
+    });
+  }
+
+  /* 추천기능: 내 인적사항 브라우저 저장/불러오기 */
+  function saveUserDefault() {
+    const dept = document.getElementById('dept').value;
+    const pos = document.getElementById('position').value;
+    const name = document.getElementById('name').value;
+    localStorage.setItem('gov_travel_dept', dept);
+    localStorage.setItem('gov_travel_pos', pos);
+    localStorage.setItem('gov_travel_name', name);
+    alert(`[${name} ${pos}]님의 기본 인적사항이 브라우저에 저장되었습니다. 다음 접속 시 자동 반영됩니다.`);
+  }
+
+  function loadUserDefault() {
+    const dept = localStorage.getItem('gov_travel_dept');
+    const pos = localStorage.getItem('gov_travel_pos');
+    const name = localStorage.getItem('gov_travel_name');
+    if (dept) document.getElementById('dept').value = dept;
+    if (pos) document.getElementById('position').value = pos;
+    if (name) document.getElementById('name').value = name;
+  }
+
+  function downloadPDF() {
+    const dept = document.getElementById('dept').value.trim() || "소속기관명";
+    const name = document.getElementById('name').value.trim() || "성명";
+    const fileName = `여비정산신청서(${dept} ${name}).pdf`;
+
+    const element = document.getElementById('pdf-container');
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
+
+  window.onload = function() {
+    loadUserDefault();
+    applyManualAmounts();
+  };
+</script>
+</body>
+</html>
