@@ -439,10 +439,11 @@
       justify-content: space-between;
     }
 
+    /* 1. 상단 별지서식 문구: 종이의 왼쪽으로 배치 */
     .doc-top-ref {
       font-size: 8.5pt;
       color: #111111;
-      text-align: right;
+      text-align: left;
       font-weight: normal;
       margin-bottom: 6px;
       letter-spacing: -0.2px;
@@ -696,7 +697,7 @@
       <div class="title-area">
         <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
         <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
-        <span class="version-badge">20260905 Ver (규정 보완판)</span>
+        <span class="version-badge">202609051510 Ver</span>
       </div>
       <div class="header-right">
         <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
@@ -1060,10 +1061,31 @@
         <div id="attachmentListContainer"></div>
       </div>
 
-      <div class="form-group" style="margin-top: 10px;">
-        <label>정산서 신청 일자 (기본: 오늘)</label>
-        <input type="date" id="signDate" onchange="updateReport()">
+      <!-- 8. 2번 요청 반영: 정산서 신청일자 및 제출처(수신) 선택 옵션 -->
+      <div class="section-box">
+        <div class="section-title">
+          <span><i class="fa-regular fa-paper-plane mr-1"></i> 정산서 신청일자 및 제출처(수신) 설정</span>
+        </div>
+        <div class="form-grid mobile-col-2">
+          <div class="form-group">
+            <label>정산서 신청 일자</label>
+            <input type="date" id="signDate" onchange="updateReport()">
+          </div>
+          <div class="form-group">
+            <label>제출처(수신) 표기 선택</label>
+            <select id="agencyHeadOption" onchange="handleAgencyHeadOptionChange()">
+              <option value="default" selected>소속기관장 귀하 (기본)</option>
+              <option value="custom">직접 입력 (소속기관 대신 변경)</option>
+              <option value="none">표기 안 함 (생략)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" id="agencyHeadCustomGroup" style="display:none; margin-top:4px;">
+          <label>제출처(수신) 직접 입력 문구</label>
+          <input type="text" id="agencyHeadCustomText" placeholder="예: 부산광역시교육감 귀하, ○○학교장 귀하" oninput="updateReport()">
+        </div>
       </div>
+
     </div>
 
     <!-- 우측 표준 정산서 미리보기 패널 -->
@@ -1080,6 +1102,7 @@
       <div class="pdf-scroll-wrapper">
         <div id="pdf-container">
           <div>
+            <!-- 1번 요청 반영: 종이 왼쪽 정렬 -->
             <div class="doc-top-ref">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
             <div class="doc-main-title">국내여비 정산 신청서</div>
 
@@ -1118,13 +1141,13 @@
                 </tr>
               </tbody>
 
-              <!-- 2. 식비 / 일비 / 숙박비 -->
+              <!-- 2. 식비 / 일비 / 숙박비 (1번 수정 반영) -->
               <tbody>
                 <tr>
                   <th rowspan="2" class="col-title">식 비</th>
                   <th class="col-title">단 가</th>
-                  <td id="viewMealUnit">25,000</td>
-                  <th class="col-title">지급식수</th>
+                  <td id="viewMealUnit">25,000원</td>
+                  <th class="col-title">지급일수</th>
                   <td id="viewMealDays">2일</td>
                   <td class="text-right p-lr-6" id="viewMealTotal" style="font-weight:bold;">50,000원</td>
                 </tr>
@@ -1136,7 +1159,7 @@
                 <tr>
                   <th class="col-title">일 비</th>
                   <th class="col-title">단 가</th>
-                  <td id="viewDailyUnit">25,000</td>
+                  <td id="viewDailyUnit">25,000원</td>
                   <th class="col-title">지급일수</th>
                   <td id="viewDailyDays">2일</td>
                   <td class="text-right p-lr-6">
@@ -1175,7 +1198,7 @@
                   <th colspan="2" class="col-title">여비지급액<br>(개인청구액)</th>
                   <td colspan="4" class="text-right p-lr-6">
                     <div id="viewPersonalDistribution" style="font-size:10.5pt; font-weight:bold; color:#000;">
-                      금 0 원
+                      금 0원
                     </div>
                     <div class="sub-calc-note" id="viewReasonNote" style="display:none;"></div>
                   </td>
@@ -1194,7 +1217,9 @@
                 2026년 09월 05일
               </div>
               <div class="sign-name-container" id="viewSignContainer"></div>
-              <div class="agency-head-seal">
+              
+              <!-- 2번 요청 반영: 수신처 동적 표기 -->
+              <div class="agency-head-seal" id="viewAgencyHead">
                 소속기관장 귀하
               </div>
             </div>
@@ -1502,6 +1527,21 @@
       listHTML += `</div></div>`;
       attachEl.innerHTML = listHTML;
     }
+  }
+
+  /* 2. 제출처(수신) 선택 변경 이벤트 핸들러 */
+  function handleAgencyHeadOptionChange() {
+    const opt = document.getElementById('agencyHeadOption').value;
+    const customGroup = document.getElementById('agencyHeadCustomGroup');
+    if (opt === 'custom') {
+      customGroup.style.display = 'flex';
+      const input = document.getElementById('agencyHeadCustomText');
+      if (!input.value) input.value = "○○○학교장 귀하";
+      input.focus();
+    } else {
+      customGroup.style.display = 'none';
+    }
+    updateReport();
   }
 
   function initDefaultDates() {
@@ -1959,7 +1999,6 @@
     return total;
   }
 
-  /* 규정 반영: 자가용 운임은 차량 소유자(1인)에게만 지급 (동승자 분할 불가) */
   function applyCarFare() {
     const total = updateCarPreview();
     const origin = document.getElementById('carOrigin').value;
@@ -1980,7 +2019,6 @@
     tbody.appendChild(row);
     refreshPaymentSelectOptions();
     
-    // 자가용 운임은 기본적으로 차량 소유자 1인 전액 지급으로 자동 선택
     const newPaySelect = row.querySelector('.f-pay');
     if (newPaySelect && travelers.length > 0) {
       newPaySelect.value = `single_${travelers[0].id}`;
@@ -2137,12 +2175,11 @@
     const lodgingType = document.getElementById('lodgingType').value;
     const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
 
-    // 제1호 여비지급구분 공무원 포함 여부 확인
     const allGrade1 = travelers.length > 0 && travelers.every(t => t.grade === "1");
 
     let capPerPerson = 70000;
     if (allGrade1) {
-      capPerPerson = Infinity; // 제1호는 실비 전액 인정
+      capPerPerson = Infinity;
     } else if (regionType === 'seoul') {
       capPerPerson = 100000;
     } else if (regionType === 'metro') {
@@ -2173,6 +2210,7 @@
     applyManualAmounts();
   }
 
+  /* 2번 수정 반영: 식비/일비/숙박비 단가 및 상한액 서식 일치 */
   function applyManualAmounts() {
     const numTravelers = travelers.length;
     const regionType = document.getElementById('regionType').value;
@@ -2328,8 +2366,9 @@
     const personalSum = mealTotal + dailyTotal + lodgingPersonalSum + farePersonalSum;
     const grandTotal = corpSum + personalSum;
 
-    document.getElementById('viewMealUnit').innerText = "25,000";
-    document.getElementById('viewMealDays').innerText = `${dailyDays}일`;
+    // 식비 단가('원' 부착) 및 지급일수(다수인원 표기 일치)
+    document.getElementById('viewMealUnit').innerText = "25,000원";
+    document.getElementById('viewMealDays').innerText = `${dailyDays}일${numTravelers > 1 ? ` (${numTravelers}명)` : ''}`;
     document.getElementById('viewMealTotal').innerText = `${mealTotal.toLocaleString()}원`;
 
     let mealCalcNote = "";
@@ -2356,31 +2395,32 @@
     }
     document.getElementById('viewMealSubNote').innerHTML = mealCalcNote;
 
+    // 일비 단가('원' 부착)
     const govCarUsed = document.getElementById('govCarUsed').checked;
-    document.getElementById('viewDailyUnit').innerText = dailyUnit.toLocaleString();
+    document.getElementById('viewDailyUnit').innerText = `${dailyUnit.toLocaleString()}원`;
     document.getElementById('viewDailyDays').innerText = `${dailyDays}일${numTravelers > 1 ? ` (${numTravelers}명)` : ''}`;
     document.getElementById('viewDailyTotal').innerText = `${dailyTotal.toLocaleString()}원`;
     document.getElementById('viewDailySubNote').innerText = govCarUsed ? "(공용차량 이용 50% 감액)" : "";
 
-    /* 숙박비 서식 표기 최적화 (친지 집, 제1호 실비, 일반 실비 상한액 등) */
     const allGrade1 = travelers.length > 0 && travelers.every(t => t.grade === "1");
 
+    // 숙박비 상한액 볼드 해제 (<div>로 단가 표기 통일)
     if (lodgingType === 'relative') {
       document.getElementById('viewLodgingCap').innerHTML = `
-        <div style="font-weight:bold;">20,000원</div>
+        <div>20,000원</div>
         <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">(친지 집 1박당 정액)</div>
       `;
       document.getElementById('viewLodgingExpense').innerText = "친지 집 숙박";
       document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
       document.getElementById('viewLodgingSubNote').innerText = `(1박당 20,000원 × ${lodgingNights}박${numTravelers > 1 ? ` × ${numTravelers}명` : ''})`;
     } else if (lodgingType === 'none' || lodgingNights === 0) {
-      document.getElementById('viewLodgingCap').innerHTML = `<div style="font-weight:bold;">-</div>`;
+      document.getElementById('viewLodgingCap').innerHTML = `<div>-</div>`;
       document.getElementById('viewLodgingExpense').innerText = "0원";
       document.getElementById('viewLodgingTotal').innerText = "0원";
       document.getElementById('viewLodgingSubNote').innerText = "(숙박 안함)";
     } else if (allGrade1) {
       document.getElementById('viewLodgingCap').innerHTML = `
-        <div style="font-weight:bold;">실비</div>
+        <div>실비</div>
         <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">(제1호 상한액 없음)</div>
       `;
       document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
@@ -2397,7 +2437,7 @@
       }
 
       document.getElementById('viewLodgingCap').innerHTML = `
-        <div style="font-weight:bold;">${capPerPerson.toLocaleString()}원</div>
+        <div>${capPerPerson.toLocaleString()}원</div>
         <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">${subCapNote}</div>
       `;
       document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
@@ -2432,12 +2472,13 @@
     updateCarPreview();
   }
 
+  /* 3번 수정 반영: 공문서 표준 표기 (금 0원 띄어쓰기 정돈) */
   function renderPersonalDistribution(totalPersonal, travelerAmounts) {
     const numTravelers = travelers.length;
     const distEl = document.getElementById('viewPersonalDistribution');
 
     if (numTravelers === 1) {
-      distEl.innerHTML = `금 ${totalPersonal.toLocaleString()} 원`;
+      distEl.innerHTML = `금 ${totalPersonal.toLocaleString()}원`;
     } else {
       let distHTML = `<div style="font-size:9pt; margin-bottom:2px; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px 12px;">`;
       travelers.forEach(t => {
@@ -2449,6 +2490,7 @@
     }
   }
 
+  /* 3번 수정 반영: 수기조정 표기 (금 0원 띄어쓰기 정돈) */
   function applyFinalManualAdjustment() {
     const useManual = document.getElementById('useManualAdjustment').checked;
     if (!useManual) return;
@@ -2459,7 +2501,7 @@
 
     const distEl = document.getElementById('viewPersonalDistribution');
     if (numTravelers === 1) {
-      distEl.innerHTML = `금 ${finalVal.toLocaleString()} 원`;
+      distEl.innerHTML = `금 ${finalVal.toLocaleString()}원`;
     } else {
       const perCapita = Math.floor(finalVal / numTravelers);
       const remainder = finalVal - (perCapita * numTravelers);
@@ -2482,13 +2524,14 @@
     }
   }
 
+  /* 3번 수정 반영: 출장자 다수 시 소속 1:1 줄맞춤 왜곡 방지 */
   function updateReport() {
     const vDept = document.getElementById('viewDept');
     const vPos = document.getElementById('viewPosition');
     const vName = document.getElementById('viewName');
 
-    const uniqueDepts = [...new Set(travelers.map(t => t.dept))];
-    vDept.innerHTML = uniqueDepts.join('<br>');
+    const allSameDept = travelers.length > 0 && travelers.every(t => t.dept === travelers[0].dept);
+    vDept.innerHTML = allSameDept ? (travelers[0]?.dept || '-') : travelers.map(t => t.dept || '-').join('<br>');
     vPos.innerHTML = travelers.map(t => t.pos || '-').join('<br>');
     vName.innerHTML = travelers.map(t => t.name).join('<br>');
 
@@ -2535,6 +2578,23 @@
       signContainer.appendChild(line);
     });
 
+    /* 2번 요청 반영: 서식 하단 제출처(수신) 동적 갱신 */
+    const agencyHeadEl = document.getElementById('viewAgencyHead');
+    const agencyHeadOption = document.getElementById('agencyHeadOption') ? document.getElementById('agencyHeadOption').value : 'default';
+    if (agencyHeadEl) {
+      if (agencyHeadOption === 'none') {
+        agencyHeadEl.style.display = 'none';
+        agencyHeadEl.innerText = '';
+      } else if (agencyHeadOption === 'custom') {
+        agencyHeadEl.style.display = 'block';
+        const customVal = document.getElementById('agencyHeadCustomText').value.trim();
+        agencyHeadEl.innerText = customVal || '소속기관장 귀하';
+      } else {
+        agencyHeadEl.style.display = 'block';
+        agencyHeadEl.innerText = '소속기관장 귀하';
+      }
+    }
+
     const excessReason = document.getElementById('lodgingExcessReason').value.trim();
     const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
     const lodgingType = document.getElementById('lodgingType').value;
@@ -2580,7 +2640,7 @@
     });
   }
 
-  /* 관외여비 지급내역 엑셀 파일 다운로드 함수 */
+  /* 3번 요청 반영: 관외여비 지급내역 엑셀 파일 다운로드 (3~4행 사이 이중선 & 표 테두리만 굵은 선) */
   function exportTravelExpenseExcel() {
     if (typeof XLSX === 'undefined') {
       alert('엑셀 생성 라이브러리를 불러오지 못했습니다. 네트워크 상태를 확인해 주세요.');
@@ -2811,24 +2871,42 @@
       { wch: 32 }   // 비고
     ];
 
-    const borderThin = {
-      top: { style: "thin", color: { rgb: "000000" } },
-      bottom: { style: "thin", color: { rgb: "000000" } },
-      left: { style: "thin", color: { rgb: "000000" } },
-      right: { style: "thin", color: { rgb: "000000" } }
-    };
-    const borderHeader = {
-      top: { style: "medium", color: { rgb: "000000" } },
-      bottom: { style: "medium", color: { rgb: "000000" } },
-      left: { style: "thin", color: { rgb: "000000" } },
-      right: { style: "thin", color: { rgb: "000000" } }
-    };
-    const borderDoubleBottom = {
-      top: { style: "thin", color: { rgb: "000000" } },
-      bottom: { style: "double", color: { rgb: "000000" } },
-      left: { style: "thin", color: { rgb: "000000" } },
-      right: { style: "thin", color: { rgb: "000000" } }
-    };
+    // 표 영역 테두리 계산 함수: 표 테두리(외곽)는 굵은선(medium), 3행과 4행 사이는 이중선(double)
+    const tableStartR = 2; // 엑셀 3행 (index 2)
+    const tableEndR = wsData.length - 1; // 엑셀 마지막 행 (합계 행)
+    const tableStartC = 0;
+    const tableEndC = 12;
+
+    function getTableBorder(R, C) {
+      const isTopOuter = (R === tableStartR);
+      const isBottomOuter = (R === tableEndR);
+      const isLeftOuter = (C === tableStartC);
+      const isRightOuter = (C === tableEndC);
+
+      let topStyle = "thin";
+      if (isTopOuter) {
+        topStyle = "medium"; // 표 최상단 테두리: 굵은선
+      } else if (R === 3) {
+        topStyle = "double"; // 4행 상단: 3행과의 사이 이중선
+      }
+
+      let bottomStyle = "thin";
+      if (isBottomOuter) {
+        bottomStyle = "medium"; // 표 최하단 테두리: 굵은선
+      } else if (R === 2) {
+        bottomStyle = "double"; // 3행(헤더) 하단: 3행과 4행 사이 이중선
+      }
+
+      const leftStyle = isLeftOuter ? "medium" : "thin";   // 표 좌측 테두리: 굵은선
+      const rightStyle = isRightOuter ? "medium" : "thin"; // 표 우측 테두리: 굵은선
+
+      return {
+        top: { style: topStyle, color: { rgb: "000000" } },
+        bottom: { style: bottomStyle, color: { rgb: "000000" } },
+        left: { style: leftStyle, color: { rgb: "000000" } },
+        right: { style: rightStyle, color: { rgb: "000000" } }
+      };
+    }
 
     const styleTitle = {
       font: { name: "맑은 고딕", sz: 17, bold: true },
@@ -2837,41 +2915,6 @@
     const styleSub = {
       font: { name: "맑은 고딕", sz: 9.5, color: { rgb: "555555" } },
       alignment: { horizontal: "right", vertical: "center" }
-    };
-    const styleHeader = {
-      font: { name: "맑은 고딕", sz: 10, bold: true },
-      alignment: { horizontal: "center", vertical: "center", wrapText: true },
-      fill: { fgColor: { rgb: "F2F2F2" } },
-      border: borderHeader
-    };
-    const styleDataCenter = {
-      font: { name: "맑은 고딕", sz: 9.5 },
-      alignment: { horizontal: "center", vertical: "center", wrapText: true },
-      border: borderThin
-    };
-    const styleDataLeft = {
-      font: { name: "맑은 고딕", sz: 9.5 },
-      alignment: { horizontal: "left", vertical: "center", wrapText: true },
-      border: borderThin
-    };
-    const styleDataNumber = {
-      font: { name: "맑은 고딕", sz: 9.5 },
-      alignment: { horizontal: "right", vertical: "center" },
-      numFmt: "#,##0",
-      border: borderThin
-    };
-    const styleTotal = {
-      font: { name: "맑은 고딕", sz: 10, bold: true },
-      alignment: { horizontal: "center", vertical: "center" },
-      fill: { fgColor: { rgb: "F9F9F9" } },
-      border: borderDoubleBottom
-    };
-    const styleTotalNumber = {
-      font: { name: "맑은 고딕", sz: 10, bold: true },
-      alignment: { horizontal: "right", vertical: "center" },
-      fill: { fgColor: { rgb: "F9F9F9" } },
-      numFmt: "#,##0",
-      border: borderDoubleBottom
     };
 
     for (let R = 0; R < wsData.length; R++) {
@@ -2886,23 +2929,44 @@
           ws[cellRef].s = styleTitle;
         } else if (R === 1) {
           ws[cellRef].s = styleSub;
-        } else if (R === 2) {
-          ws[cellRef].s = styleHeader;
-        } else if (R === wsData.length - 1) {
-          if (C <= 6) {
-            ws[cellRef].s = styleTotal;
-          } else if (C >= 7 && C <= 11) {
-            ws[cellRef].s = styleTotalNumber;
-          } else {
-            ws[cellRef].s = styleTotal;
-          }
         } else {
-          if ([0, 1, 2, 3, 4, 5].includes(C)) {
-            ws[cellRef].s = styleDataCenter;
-          } else if (C === 6 || C === 12) {
-            ws[cellRef].s = styleDataLeft;
+          const cellBorder = getTableBorder(R, C);
+
+          if (R === 2) {
+            // 헤더 행 (3행)
+            ws[cellRef].s = {
+              font: { name: "맑은 고딕", sz: 10, bold: true },
+              alignment: { horizontal: "center", vertical: "center", wrapText: true },
+              fill: { fgColor: { rgb: "F2F2F2" } },
+              border: cellBorder
+            };
+          } else if (R === tableEndR) {
+            // 합계 행 (마지막 행)
+            const isNumber = (C >= 7 && C <= 11);
+            ws[cellRef].s = {
+              font: { name: "맑은 고딕", sz: 10, bold: true },
+              alignment: { horizontal: isNumber ? "right" : "center", vertical: "center" },
+              fill: { fgColor: { rgb: "F9F9F9" } },
+              numFmt: isNumber ? "#,##0" : undefined,
+              border: cellBorder
+            };
           } else {
-            ws[cellRef].s = styleDataNumber;
+            // 데이터 행 (4행 이상)
+            let align = "center";
+            let numFmt = undefined;
+            if (C === 6 || C === 12) {
+              align = "left";
+            } else if (C >= 7 && C <= 11) {
+              align = "right";
+              numFmt = "#,##0";
+            }
+
+            ws[cellRef].s = {
+              font: { name: "맑은 고딕", sz: 9.5 },
+              alignment: { horizontal: align, vertical: "center", wrapText: (C === 4 || C === 6 || C === 12) },
+              numFmt: numFmt,
+              border: cellBorder
+            };
           }
         }
       }
@@ -2926,7 +2990,7 @@
       }
       ws['!rows'].push({ hpt: rowHeight });
     }
-    ws['!rows'].push({ hpt: 24 });
+    ws['!rows'].push({ hpt: 25 });
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "관외여비지급내역");
