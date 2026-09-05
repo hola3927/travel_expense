@@ -3,7 +3,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚅</text></svg>">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>공무원 여비 정산 프로그램 (관외출장)</title>
   <!-- Pretendard 웹폰트 및 Font Awesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
@@ -131,6 +131,38 @@
     }
     .guide-box strong { color: var(--primary); }
 
+    /* 모바일 전용 탭 전환 바 */
+    .mobile-tab-bar {
+      display: none;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 10px;
+    }
+    .mobile-tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .mobile-tab-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
     /* 레이아웃 메인 */
     .app-main {
       display: flex;
@@ -160,6 +192,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .section-box {
@@ -219,7 +253,8 @@
     .btn-sm { padding: 4px 7px; font-size: 11px; }
 
     /* 운임 테이블 */
-    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; }
+    .fare-table-wrap { width: 100%; overflow-x: auto; }
+    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; min-width: 480px; }
     .fare-table th, .fare-table td { border: 1px solid var(--border-color); padding: 5px 4px; text-align: center; }
     .fare-table th { background: var(--table-header); font-weight: 600; color: #334155; }
     .fare-table input, .fare-table select { width: 100%; padding: 4px; font-size: 11.5px; border: 1px solid var(--border-dark); border-radius: 4px; }
@@ -228,9 +263,24 @@
     .car-calc-box {
       background: #eff6ff;
       border: 1px solid #bfdbfe;
-      padding: 11px;
+      padding: 12px;
       border-radius: 8px;
       margin-top: 8px;
+    }
+    .fuel-standard-info {
+      margin-top: 9px;
+      padding: 9px 11px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #334155;
+      line-height: 1.55;
+    }
+    .fuel-standard-info a {
+      color: #1d4ed8;
+      text-decoration: underline;
+      font-weight: 600;
     }
 
     /* 우측 인쇄/PDF 미리보기 영역 (1페이지 최적화) */
@@ -239,6 +289,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
     .action-bar {
       width: 100%;
@@ -249,10 +300,21 @@
       margin-bottom: 10px;
     }
 
-    /* A4 1페이지 규격 (높이 297mm 내에서 70~75% 알차게 채우도록 설계) */
+    /* 모바일 가로 스크롤 허용 래퍼 */
+    .pdf-scroll-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 14px;
+    }
+
+    /* A4 1페이지 규격 */
     #pdf-container {
       width: 210mm;
-      height: 295mm; /* 2페이지 넘어감 원천 차단 */
+      min-width: 210mm;
+      height: 295mm;
       max-height: 295mm;
       padding: 16mm 16mm;
       background: #fff;
@@ -294,7 +356,7 @@
     }
     .report-table th, .report-table td {
       border: 1px solid #000;
-      padding: 9px 5px; /* 적당히 시원하게 채우는 높이 */
+      padding: 9px 5px;
       vertical-align: middle;
       text-align: center;
       word-break: keep-all;
@@ -341,6 +403,69 @@
       text-align: center;
     }
 
+    /* 자매 사이트 섹션 */
+    .family-sites-card {
+      margin-top: 34px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .family-sites-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gov-slate);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .family-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 12px;
+    }
+    .family-item {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .family-item-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .family-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gov-slate);
+      margin-bottom: 5px;
+    }
+    .family-item-desc {
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.55;
+      margin-bottom: 9px;
+    }
+    .family-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .family-link-btn:hover { text-decoration: underline; }
+
     /* 모달 팝업 */
     .modal-overlay {
       display: none;
@@ -370,17 +495,43 @@
     .footer {
       padding: 24px 0 10px;
       border-top: 1px solid var(--border-color);
-      margin-top: 36px;
+      margin-top: 30px;
       text-align: center;
       font-size: 11.5px;
       color: #64748b;
     }
 
+    /* 모바일 반응형 스타일 (1024px 이하) */
+    @media screen and (max-width: 1024px) {
+      body { padding: 12px 10px 32px; }
+      .header { padding: 14px 16px; }
+      .header-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .header-right { width: 100%; justify-content: flex-start; }
+      
+      /* 모바일 전용 탭 활성화 */
+      .mobile-tab-bar { display: flex; }
+      .app-main { flex-direction: column; gap: 14px; }
+      .input-panel, .preview-panel {
+        width: 100%;
+        max-width: 100%;
+        flex: none;
+      }
+      .input-panel {
+        max-height: none;
+        overflow-y: visible;
+        padding: 15px;
+      }
+      .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .preview-panel { display: none; } /* 기본적으로 입력 패널 우선 */
+      .action-bar { justify-content: center; }
+    }
+
     @media print {
       body { background: transparent; padding: 0; }
-      .header, .input-panel, .action-bar, .footer, .modal-overlay { display: none !important; }
-      .app-main, .container { display: block; width: 100%; margin: 0; }
-      #pdf-container { box-shadow: none; padding: 12mm; margin: 0; width: 100%; height: 100vh; max-height: 100vh; }
+      .header, .mobile-tab-bar, .input-panel, .action-bar, .family-sites-card, .footer, .modal-overlay { display: none !important; }
+      .preview-panel { display: block !important; width: 100% !important; }
+      .app-main, .container, .pdf-scroll-wrapper { display: block !important; width: 100%; margin: 0; padding: 0; }
+      #pdf-container { box-shadow: none; padding: 12mm; margin: 0; width: 100%; min-width: auto; height: 100vh; max-height: 100vh; }
     }
   </style>
 </head>
@@ -393,7 +544,7 @@
       <div class="title-area">
         <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
         <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
-        <span class="version-badge">20260904 1630</span>
+        <span class="version-badge">20260905 0920</span>
       </div>
       <div class="header-right">
         <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
@@ -414,9 +565,19 @@
     </div>
   </div>
 
+  <!-- 모바일 화면 전용 상단 탭 스위처 -->
+  <div class="mobile-tab-bar">
+    <button class="mobile-tab-btn active" id="btnTabInput" onclick="switchMobileView('input')">
+      <i class="fa-solid fa-pen-to-square"></i> 여비 입력기
+    </button>
+    <button class="mobile-tab-btn" id="btnTabPreview" onclick="switchMobileView('preview')">
+      <i class="fa-solid fa-file-lines"></i> 서식 미리보기 & 다운로드
+    </button>
+  </div>
+
   <div class="app-main">
     <!-- 1. 좌측 입력 및 계산 패널 -->
-    <div class="input-panel">
+    <div class="input-panel" id="inputPanel">
       <div class="panel-header">
         <span><i class="fa-solid fa-sliders mr-1"></i> 여비 정산 입력기</span>
         <div style="display:flex; gap:6px;">
@@ -424,7 +585,7 @@
             <i class="fa-regular fa-floppy-disk"></i> 내 정보 저장
           </button>
           <button class="btn btn-secondary btn-sm" onclick="copySummaryText()" title="메신저 보고용 요약 텍스트 복사">
-            <i class="fa-regular fa-copy"></i> 여비 정산내용 복사
+            <i class="fa-regular fa-copy"></i> 정산내용 복사
           </button>
         </div>
       </div>
@@ -639,7 +800,15 @@
             </div>
           </div>
 
-          <div style="margin-top:7px; display:flex; justify-content:space-between; align-items:center;">
+          <!-- 유가 고시 기준 안내 박스 (요구사항 2 반영) -->
+          <div class="fuel-standard-info">
+            <div><i class="fa-solid fa-circle-info text-blue-600"></i> <strong>유가 및 충전단가 적용 기준 안내</strong></div>
+            <div>• <strong>휘발유·경유·LPG</strong>: <strong>출장 시작일 기준</strong> <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">한국석유공사 유가정보서비스(오피넷)</a>에 고시된 전국 평균 유가를 적용합니다.</div>
+            <div>• <strong>전기차</strong>: <a href="https://ev.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 무공해차 통합누리집</a> 충전요금을 참고하시기 바랍니다.</div>
+            <div>• <strong>수소차</strong>: <a href="https://www.h2nbiz.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 수소유통정보시스템</a> 고시 충전가격을 참고하시기 바랍니다.</div>
+          </div>
+
+          <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <span style="font-size:11.5px; color:#475569;" id="carCalcPreview">
               산출 연료비: 113,200원 + 통행료 48,200원 = 161,400원
             </span>
@@ -647,52 +816,54 @@
           </div>
         </div>
 
-        <table class="fare-table" id="fareInputTable">
-          <thead>
-            <tr>
-              <th width="16%">일자</th>
-              <th width="16%">교통편</th>
-              <th width="18%">출발지</th>
-              <th width="18%">도착지</th>
-              <th width="13%">결제구분</th>
-              <th width="14%">금액(원)</th>
-              <th width="5%">삭제</th>
-            </tr>
-          </thead>
-          <tbody id="fareTbody">
-            <tr>
-              <td><input type="date" value="2026-09-04" class="f-date" onchange="calcAll()"></td>
-              <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
-              <td><input type="text" value="부산(교육청)" class="f-origin" oninput="calcAll()"></td>
-              <td><input type="text" value="서울(코엑스)" class="f-dest" oninput="calcAll()"></td>
-              <td>
-                <select class="f-pay" onchange="calcAll()">
-                  <option value="personal" selected>개인</option>
-                  <option value="corp">법인카드</option>
-                </select>
-              </td>
-              <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
-              <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
-            </tr>
-            <tr>
-              <td><input type="date" value="2026-09-05" class="f-date" onchange="calcAll()"></td>
-              <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
-              <td><input type="text" value="서울(코엑스)" class="f-origin" oninput="calcAll()"></td>
-              <td><input type="text" value="부산(교육청)" class="f-dest" oninput="calcAll()"></td>
-              <td>
-                <select class="f-pay" onchange="calcAll()">
-                  <option value="personal" selected>개인</option>
-                  <option value="corp">법인카드</option>
-                </select>
-              </td>
-              <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
-              <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="fare-table-wrap">
+          <table class="fare-table" id="fareInputTable">
+            <thead>
+              <tr>
+                <th width="16%">일자</th>
+                <th width="16%">교통편</th>
+                <th width="18%">출발지</th>
+                <th width="18%">도착지</th>
+                <th width="13%">결제구분</th>
+                <th width="14%">금액(원)</th>
+                <th width="5%">삭제</th>
+              </tr>
+            </thead>
+            <tbody id="fareTbody">
+              <tr>
+                <td><input type="date" value="2026-09-04" class="f-date" onchange="calcAll()"></td>
+                <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
+                <td><input type="text" value="부산(교육청)" class="f-origin" oninput="calcAll()"></td>
+                <td><input type="text" value="서울(코엑스)" class="f-dest" oninput="calcAll()"></td>
+                <td>
+                  <select class="f-pay" onchange="calcAll()">
+                    <option value="personal" selected>개인</option>
+                    <option value="corp">법인카드</option>
+                  </select>
+                </td>
+                <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+              </tr>
+              <tr>
+                <td><input type="date" value="2026-09-05" class="f-date" onchange="calcAll()"></td>
+                <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
+                <td><input type="text" value="서울(코엑스)" class="f-origin" oninput="calcAll()"></td>
+                <td><input type="text" value="부산(교육청)" class="f-dest" oninput="calcAll()"></td>
+                <td>
+                  <select class="f-pay" onchange="calcAll()">
+                    <option value="personal" selected>개인</option>
+                    <option value="corp">법인카드</option>
+                  </select>
+                </td>
+                <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- 최종 여비지급액 수기조정 및 사유 입력 (요구사항 1) -->
+      <!-- 최종 여비지급액 수기조정 및 사유 입력 -->
       <div class="section-box" style="background:#fefce8; border-color:#fde047;">
         <div class="section-title" style="color:#a16207;">
           <span><i class="fa-solid fa-pen-to-square mr-1"></i> 최종 여비지급액(개인청구액) 직접 조정</span>
@@ -716,8 +887,8 @@
       </div>
     </div>
 
-    <!-- 2. 우측 표준 정산서 미리보기 패널 (요구사항 2, 3, 4, 5 반영) -->
-    <div class="preview-panel">
+    <!-- 2. 우측 표준 정산서 미리보기 패널 -->
+    <div class="preview-panel" id="previewPanel">
       <div class="action-bar">
         <button class="btn btn-secondary" onclick="window.print()">
           <i class="fa-solid fa-print"></i> 인쇄
@@ -727,139 +898,190 @@
         </button>
       </div>
 
-      <!-- 1페이지 고정 인쇄 규격 컨테이너 -->
-      <div id="pdf-container">
-        <div>
-          <!-- 상단 서식명 표기 (요구사항 4) -->
-          <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
-          
-          <!-- 문서 제목 (요구사항 4) -->
-          <div class="doc-title">국내여비 정산 신청서</div>
+      <!-- 모바일 화면에서 밀림 방지를 위한 스크롤 래퍼 -->
+      <div class="pdf-scroll-wrapper">
+        <div id="pdf-container">
+          <div>
+            <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
+            <div class="doc-title">국내여비 정산 신청서</div>
 
-          <table class="report-table">
-            <colgroup>
-              <col width="16%">
-              <col width="17%">
-              <col width="16%">
-              <col width="17%">
-              <col width="17%">
-              <col width="17%">
-            </colgroup>
-            <tbody>
-              <!-- 기본정보 -->
-              <tr>
-                <th>소 속</th>
-                <td>
-                  <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
-                </td>
-                <th>직급(직위)</th>
-                <td>
-                  <span id="viewPosition" class="cell-auto-fit">교사/주무관</span>
-                </td>
-                <th>성 명</th>
-                <td>
-                  <span id="viewName">김교육</span>
-                </td>
-              </tr>
-              <!-- 출장 일정 -->
-              <tr>
-                <th rowspan="2">출장(부임)<br>일 정</th>
-                <th>일 시</th>
-                <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
-                  2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
-                </td>
-              </tr>
-              <tr>
-                <th>출장(부임)지</th>
-                <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
-              </tr>
+            <table class="report-table">
+              <colgroup>
+                <col width="16%">
+                <col width="17%">
+                <col width="16%">
+                <col width="17%">
+                <col width="17%">
+                <col width="17%">
+              </colgroup>
+              <tbody>
+                <!-- 기본정보 -->
+                <tr>
+                  <th>소 속</th>
+                  <td>
+                    <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
+                  </td>
+                  <th>직급(직위)</th>
+                  <td>
+                    <span id="viewPosition" class="cell-auto-fit">교사/주무관</span>
+                  </td>
+                  <th>성 명</th>
+                  <td>
+                    <span id="viewName">김교육</span>
+                  </td>
+                </tr>
+                <!-- 출장 일정 -->
+                <tr>
+                  <th rowspan="2">출장(부임)<br>일 정</th>
+                  <th>일 시</th>
+                  <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
+                    2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
+                  </td>
+                </tr>
+                <tr>
+                  <th>출장(부임)지</th>
+                  <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
+                </tr>
 
-              <!-- 식비 -->
-              <tr>
-                <th>식 비</th>
-                <th>단 가</th>
-                <td id="viewMealUnit">25,000</td>
-                <th>지급일수</th>
-                <td id="viewMealDays">2일</td>
-                <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
-              </tr>
+                <!-- 식비 -->
+                <tr>
+                  <th>식 비</th>
+                  <th>단 가</th>
+                  <td id="viewMealUnit">25,000</td>
+                  <th>지급일수</th>
+                  <td id="viewMealDays">2일</td>
+                  <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
+                </tr>
 
-              <!-- 일비 -->
-              <tr>
-                <th>일 비</th>
-                <th>단 가</th>
-                <td id="viewDailyUnit">25,000</td>
-                <th>지급일수</th>
-                <td id="viewDailyDays">2일</td>
-                <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
-              </tr>
+                <!-- 일비 -->
+                <tr>
+                  <th>일 비</th>
+                  <th>단 가</th>
+                  <td id="viewDailyUnit">25,000</td>
+                  <th>지급일수</th>
+                  <td id="viewDailyDays">2일</td>
+                  <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
+                </tr>
 
-              <!-- 숙박비 -->
-              <tr>
-                <th>숙 박 비</th>
-                <th>단 가</th>
-                <td id="viewLodgingUnit">100,000</td>
-                <th>지급일수</th>
-                <td id="viewLodgingDays">1박</td>
-                <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
-              </tr>
+                <!-- 숙박비 -->
+                <tr>
+                  <th>숙 박 비</th>
+                  <th>단 가</th>
+                  <td id="viewLodgingUnit">100,000</td>
+                  <th>지급일수</th>
+                  <td id="viewLodgingDays">1박</td>
+                  <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
+                </tr>
 
-              <!-- 운임 헤더 -->
-              <tr>
-                <th rowspan="5" id="viewFareRowspan">운 임</th>
-                <th>일 자</th>
-                <th>교통편</th>
-                <th>출발지</th>
-                <th>도착지</th>
-                <th>금 액</th>
-              </tr>
-            </tbody>
-            <tbody id="viewFareTbody"></tbody>
-            <tbody>
-              <tr>
-                <th colspan="2">합 계</th>
-                <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
-                  법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
-                  개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
-                  소계: <span id="viewTotalSum">0</span>원
-                </td>
-              </tr>
-              <!-- 여비지급액 및 조정사유 산출근거 반영 (요구사항 1) -->
-              <tr>
-                <th colspan="2">여비지급액<br>(개인청구액)</th>
-                <td colspan="4" class="text-right p-lr-8">
-                  <div style="font-size:14px; font-weight: bold; color:#000;">
-                    금 <span id="viewFinalClaim">319,600</span> 원
-                  </div>
-                  <div class="calc-reason-note" id="viewReasonNote">
-                    [사유 및 산출근거] 기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <!-- 운임 헤더 -->
+                <tr>
+                  <th rowspan="5" id="viewFareRowspan">운 임</th>
+                  <th>일 자</th>
+                  <th>교통편</th>
+                  <th>출발지</th>
+                  <th>도착지</th>
+                  <th>금 액</th>
+                </tr>
+              </tbody>
+              <tbody id="viewFareTbody"></tbody>
+              <tbody>
+                <tr>
+                  <th colspan="2">합 계</th>
+                  <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
+                    법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
+                    개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
+                    소계: <span id="viewTotalSum">0</span>원
+                  </td>
+                </tr>
+                <!-- 여비지급액 및 조정사유 산출근거 -->
+                <tr>
+                  <th colspan="2">여비지급액<br>(개인청구액)</th>
+                  <td colspan="4" class="text-right p-lr-8">
+                    <div style="font-size:14px; font-weight: bold; color:#000;">
+                      금 <span id="viewFinalClaim">319,600</span> 원
+                    </div>
+                    <div class="calc-reason-note" id="viewReasonNote">
+                      [사유 및 산출근거] 기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-          <!-- 규정 문구 및 서명란 -->
-          <div class="statement-box">
-            <div class="rule-text">
-              「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
-            </div>
-            <div class="attach-text">
-              첨부 : 신용카드 매출전표 등 1부
-            </div>
-            <div class="sign-date" id="viewSignDate">
-              2026년 09월 04일
-            </div>
-            <div class="sign-name">
-              신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
+            <!-- 규정 문구 및 서명란 -->
+            <div class="statement-box">
+              <div class="rule-text">
+                「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+              </div>
+              <div class="attach-text">
+                첨부 : 신용카드 매출전표 등 1부
+              </div>
+              <div class="sign-date" id="viewSignDate">
+                2026년 09월 04일
+              </div>
+              <div class="sign-name">
+                신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- 인사혁신처 예규 기준 안내 각주 (요구사항 5) -->
-        <div class="doc-footer-legal">
-          ※ 본 계산은 「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.) 기준에 따라 산정되었습니다.
+          <!-- 예규 기준 안내 각주 -->
+          <div class="doc-footer-legal">
+            ※ 본 계산은 「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.) 기준에 따라 산정되었습니다.
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자매 사이트 및 유관 프로그램 안내 영역 (요구사항 3 반영) -->
+  <div class="family-sites-card">
+    <div class="family-sites-title">
+      <i class="fa-solid fa-shapes text-blue-600"></i> 업무 지원 자매 서비스 및 유관 프로그램
+    </div>
+    <div class="family-grid">
+      <!-- 여비 -->
+      <div class="family-item">
+        <div>
+          <span class="family-item-badge">[여비]</span>
+          <div class="family-item-name">근무지외 국내출장 여비 산출기</div>
+          <div class="family-item-desc">
+            • 근무지외 국내출장 여비를 산출합니다.<br>
+            • 출발지와 도착지 명칭 검색만으로도 최적 주행거리와 통행료를 자동 계산합니다.<br>
+            • 유종별 연비와 전국 평균 유가를 기반으로 유류비를 오차 없이 즉시 산출합니다.
+          </div>
+        </div>
+        <a href="https://hola3927.github.io/travel_expense/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/travel_expense/
+        </a>
+      </div>
+
+      <!-- 교육비특별회계 1 -->
+      <div class="family-item">
+        <div>
+          <span class="family-item-badge" style="color:#047857;">[교육비특별회계 세출예산]</span>
+          <div class="family-item-name">부산시교육청 예산 정리 프로그램</div>
+          <div class="family-item-desc">
+            • K-에듀파인 예산현액 엑셀파일 일괄 분석 및 통계 집계 도구
+          </div>
+        </div>
+        <a href="https://hola3927.github.io/budget-dashboard/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/budget-dashboard/
+        </a>
+      </div>
+
+      <!-- 교육비특별회계 2 -->
+      <div class="family-item">
+        <div>
+          <span class="family-item-badge" style="color:#047857;">[교육비특별회계 세출예산]</span>
+          <div class="family-item-name">집행실적(102-A) 분석 프로그램</div>
+          <div class="family-item-desc">
+            • K-에듀파인 102-A 장부 일괄 분석 및 세출 집행실적 시각화 도구
+          </div>
+        </div>
+        <a href="https://hola3927.github.io/budget-log-102a/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/budget-log-102a/
+        </a>
       </div>
     </div>
   </div>
@@ -916,6 +1138,40 @@
     carOrigin: { x: "129.0531", y: "35.1796" },
     carDest: { x: "127.0588", y: "37.5126" }
   };
+
+  /* 모바일 뷰 전환 함수 */
+  function switchMobileView(view) {
+    const inputPanel = document.getElementById('inputPanel');
+    const previewPanel = document.getElementById('previewPanel');
+    const btnInput = document.getElementById('btnTabInput');
+    const btnPreview = document.getElementById('btnTabPreview');
+
+    if (view === 'input') {
+      inputPanel.style.display = 'block';
+      previewPanel.style.display = 'none';
+      btnInput.classList.add('active');
+      btnPreview.classList.remove('active');
+    } else {
+      inputPanel.style.display = 'none';
+      previewPanel.style.display = 'flex';
+      btnPreview.classList.add('active');
+      btnInput.classList.remove('active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* 반응형 리사이즈 감지 */
+  window.addEventListener('resize', function() {
+    const inputPanel = document.getElementById('inputPanel');
+    const previewPanel = document.getElementById('previewPanel');
+    if (window.innerWidth > 1024) {
+      inputPanel.style.display = 'block';
+      previewPanel.style.display = 'flex';
+    } else {
+      const isPreview = document.getElementById('btnTabPreview').classList.contains('active');
+      switchMobileView(isPreview ? 'preview' : 'input');
+    }
+  });
 
   /* 검색 모달 제어 */
   function openSearchModal(targetId) {
@@ -1306,7 +1562,6 @@
     updateCarPreview();
   }
 
-  /* 요구사항 1: 최종 청구액 및 사유 산출근거 반영 */
   function applyFinalManualAdjustment() {
     const finalVal = parseInt(document.getElementById('manualFinalClaim').value) || 0;
     const reasonText = document.getElementById('manualReason').value.trim();
@@ -1433,7 +1688,7 @@
 
     const element = document.getElementById('pdf-container');
     const opt = {
-      margin: 0, /* 컨테이너 자체 패딩 16mm가 정확히 A4 마진 역할 수행 */
+      margin: 0,
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
