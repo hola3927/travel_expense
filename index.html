@@ -4,9 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>공무원 여비 정산 프로그램 (관외출장)</title>
-  <!-- Pretendard 웹폰트 및 Font Awesome -->
+  <title>공무원 여비 정산 프로그램 (근무지외 국내출장 - 별지 제3호 서식 표준)</title>
+  <!-- 웹폰트: UI용 Pretendard & 공문서 서식용 KoPubWorld 바탕체 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-kopub@1.0.0/kopubworldbatang.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- html2pdf.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -57,7 +58,7 @@
 
     .container { max-width: 1650px; margin: 0 auto; width: 100%; }
 
-    /* 헤더 스타일 */
+    /* UI 헤더 스타일 */
     .header {
       background: var(--card-bg);
       padding: 20px 24px;
@@ -141,7 +142,7 @@
     }
     .guide-box strong { color: var(--primary); }
 
-    /* 모바일 전용 탭 전환 바 */
+    /* 모바일 전용 탭 */
     .mobile-tab-bar {
       display: none;
       gap: 8px;
@@ -173,7 +174,7 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.08);
     }
 
-    /* 레이아웃 메인 */
+    /* 레이아웃 */
     .app-main {
       display: flex;
       flex-direction: row;
@@ -182,7 +183,6 @@
       width: 100%;
     }
 
-    /* 좌측 컨트롤 패널 */
     .input-panel {
       flex: 1.15;
       background: var(--card-bg);
@@ -228,7 +228,27 @@
       gap: 6px;
     }
 
-    /* 폼 그리드 및 유연한 인풋 */
+    /* 출장자 카드 */
+    .traveler-card {
+      background: #ffffff;
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      position: relative;
+    }
+    .traveler-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gov-slate);
+    }
+
+    /* 폼 요소 */
     .form-grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
@@ -277,21 +297,14 @@
       min-width: 0;
     }
 
-    /* 인풋 + 버튼 복합 필드 */
     .input-with-btn {
       display: flex;
       gap: 4px;
       width: 100%;
       min-width: 0;
     }
-    .input-with-btn input {
-      flex: 1;
-      min-width: 0;
-    }
-    .input-with-btn button {
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
+    .input-with-btn input { flex: 1; min-width: 0; }
+    .input-with-btn button { flex-shrink: 0; white-space: nowrap; }
 
     .btn {
       cursor: pointer;
@@ -315,6 +328,30 @@
     .btn-danger { background: #dc2626; color: #fff; }
     .btn-sm { padding: 4px 7px; font-size: 11px; }
 
+    /* 일자별 끼니 선택 박스 */
+    .meal-schedule-box {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+    .meal-day-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .meal-day-label { font-weight: 700; color: #1e293b; min-width: 90px; }
+    .meal-options { display: flex; gap: 12px; align-items: center; }
+    .meal-check-item { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+
     /* 자가용 계산기 박스 */
     .car-calc-box {
       background: #eff6ff;
@@ -335,20 +372,30 @@
       line-height: 1.55;
       word-break: keep-all;
     }
-    .fuel-standard-info a {
-      color: #1d4ed8;
-      text-decoration: underline;
-      font-weight: 600;
-    }
+    .fuel-standard-info a { color: #1d4ed8; text-decoration: underline; font-weight: 600; }
 
-    /* 운임 테이블 - 데스크톱 기본 */
-    .fare-table-wrap { width: 100%; min-width: 0; }
-    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; }
+    /* 운임 테이블 스타일 (입력창) */
+    .fare-table-wrap { width: 100%; min-width: 0; margin-top: 6px; }
+    .fare-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
     .fare-table th, .fare-table td { border: 1px solid var(--border-color); padding: 5px 4px; text-align: center; }
     .fare-table th { background: var(--table-header); font-weight: 600; color: #334155; }
     .fare-table input, .fare-table select { width: 100%; padding: 5px 4px; font-size: 11.5px; border: 1px solid var(--border-dark); border-radius: 4px; box-sizing: border-box; }
 
-    /* 우측 인쇄/PDF 미리보기 영역 */
+    .fare-summary-bar {
+      margin-top: 8px;
+      padding: 7px 10px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #1e293b;
+    }
+
+    /* 우측 미리보기 패널 */
     .preview-panel {
       flex: 1.15;
       display: flex;
@@ -366,7 +413,6 @@
       margin-bottom: 10px;
     }
 
-    /* 모바일 가로 스크롤 허용 래퍼 */
     .pdf-scroll-wrapper {
       width: 100%;
       display: flex;
@@ -376,17 +422,19 @@
       padding-bottom: 14px;
     }
 
-    /* A4 1페이지 규격 */
+    /* ==========================================================================
+       ★ [별지 제3호 서식 완벽 대응] 공문서 정통 톤앤매너 스타일 (Batang 명조 + 순수 흑백 실선)
+       ========================================================================== */
     #pdf-container {
       width: 210mm;
       min-width: 210mm;
-      height: 295mm;
-      max-height: 295mm;
-      padding: 16mm 16mm;
-      background: #fff;
+      min-height: 297mm;
+      padding: 15mm 18mm 12mm 18mm;
+      background: #ffffff;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      color: #000;
-      font-size: 12.5px;
+      color: #000000;
+      font-family: 'KoPubWorld Batang', 'Batang', 'Noto Serif KR', serif;
+      font-size: 10.5pt;
       line-height: 1.45;
       box-sizing: border-box;
       position: relative;
@@ -395,145 +443,144 @@
       justify-content: space-between;
     }
 
-    .doc-header-tag {
-      font-size: 10.5px;
-      color: #475569;
-      text-align: left;
+    .doc-top-ref {
+      font-size: 9pt;
+      color: #111111;
+      text-align: right;
+      font-weight: normal;
       margin-bottom: 8px;
-      font-weight: 600;
       letter-spacing: -0.2px;
     }
 
-    .doc-title {
+    .doc-main-title {
       text-align: center;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 5px;
-      margin-bottom: 18px;
+      font-size: 22pt;
+      font-weight: bold;
+      letter-spacing: 6px;
+      margin: 4px 0 2px 0;
+      color: #000000;
     }
 
-    .report-table {
+    .doc-sub-instruction {
+      text-align: center;
+      font-size: 8.5pt;
+      color: #333333;
+      margin-bottom: 12px;
+      letter-spacing: -0.2px;
+    }
+
+    /* 정통 관공서 표준 표 서식 */
+    .gov-report-table {
       width: 100%;
       border-collapse: collapse;
-      border: 1.5px solid #000;
-      font-size: 12px;
-      margin-bottom: 12px;
+      border: 1.5px solid #000000; /* 표 외곽 실선 */
+      font-size: 9.5pt;
+      margin-bottom: 10px;
       table-layout: fixed;
+      color: #000000;
     }
-    .report-table th, .report-table td {
-      border: 1px solid #000;
-      padding: 9px 5px;
+    
+    .gov-report-table th, .gov-report-table td {
+      border: 1px solid #000000; /* 표 내부 실선 */
+      padding: 5.5px 5px;
       vertical-align: middle;
       text-align: center;
       word-break: keep-all;
     }
-    .report-table th { background-color: #f8fafc; font-weight: 600; }
+
+    .gov-report-table th { 
+      background-color: #f2f2f2; /* 관공서 음영 회색 */
+      font-weight: bold; 
+      color: #000000; 
+    }
+
+    .gov-report-table th.col-title {
+      background-color: #eaeaea;
+      font-weight: bold;
+    }
+
     .text-left { text-align: left !important; }
     .text-right { text-align: right !important; }
-    .p-lr-8 { padding-left: 8px !important; padding-right: 8px !important; }
+    .p-lr-6 { padding-left: 6px !important; padding-right: 6px !important; }
 
-    .cell-auto-fit {
-      white-space: nowrap;
-      overflow: hidden;
-      display: block;
-      width: 100%;
-      letter-spacing: -0.4px;
-    }
-
-    .calc-reason-note {
-      font-size: 10px;
-      color: #475569;
+    /* 금액 하단 산정내역 주석 */
+    .sub-calc-note {
+      font-size: 8pt;
+      color: #222222;
       font-weight: normal;
-      margin-top: 3px;
-      line-height: 1.35;
-      text-align: right;
+      margin-top: 2px;
+      line-height: 1.25;
+      letter-spacing: -0.3px;
     }
 
+    /* 신청서 하단 법정 서약 및 서명부 */
     .statement-box {
-      margin-top: 15px;
+      margin-top: 6px;
       text-align: left;
-      line-height: 1.9;
-      font-size: 12px;
+      line-height: 1.7;
+      font-size: 10pt;
     }
-    .statement-box .rule-text { margin-bottom: 6px; }
-    .statement-box .attach-text { font-size: 11.5px; margin-bottom: 24px; color: #475569; }
-    .sign-date { text-align: center; font-size: 13.5px; margin-bottom: 20px; letter-spacing: 2px; }
-    .sign-name { text-align: right; padding-right: 15mm; font-size: 13.5px; }
+    .statement-box .rule-text { 
+      text-indent: 10px;
+      margin-bottom: 8px; 
+      word-break: keep-all;
+    }
+    .statement-box .attach-text { 
+      font-size: 9.5pt; 
+      margin-bottom: 12px; 
+      font-weight: bold;
+    }
+    
+    .sign-date-center { 
+      text-align: center; 
+      font-size: 11pt; 
+      margin-bottom: 12px; 
+      letter-spacing: 2px; 
+      font-weight: 600;
+    }
 
-    .doc-footer-legal {
-      margin-top: auto;
-      padding-top: 8px;
-      border-top: 1px solid #cbd5e1;
-      font-size: 9.5px;
-      color: #64748b;
-      text-align: center;
-    }
-
-    /* 자매 사이트 섹션 */
-    .family-sites-card {
-      margin-top: 34px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-      width: 100%;
-    }
-    .family-sites-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gov-slate);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .family-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 12px;
-    }
-    .family-item {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 13px;
+    .sign-name-container {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      align-items: flex-end;
+      padding-right: 14mm;
+      gap: 4px;
+      font-size: 10.5pt;
+      margin-bottom: 14px;
     }
-    .family-item-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 4px;
-    }
-    .family-item-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--gov-slate);
-      margin-bottom: 5px;
-    }
-    .family-item-desc {
-      font-size: 11.5px;
-      color: #475569;
-      line-height: 1.55;
-      margin-bottom: 9px;
-    }
-    .family-link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #2563eb;
-      text-decoration: none;
-      word-break: break-all;
-    }
-    .family-link-btn:hover { text-decoration: underline; }
 
-    /* 모달 팝업 */
+    .agency-head-seal {
+      text-align: center;
+      font-size: 15pt;
+      font-weight: bold;
+      letter-spacing: 8px;
+      margin: 10px 0 14px 0;
+      color: #000;
+    }
+
+    /* 법정 별지 서식 유의사항 박스 */
+    .legal-notice-box {
+      border-top: 1px solid #000000;
+      padding-top: 5px;
+      margin-top: 6px;
+      font-size: 8pt;
+      line-height: 1.5;
+      color: #222222;
+      text-align: left;
+    }
+    .legal-notice-box strong { font-weight: bold; color: #000; }
+
+    .doc-footer-spec {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 2px;
+      font-size: 7.5pt;
+      color: #555555;
+    }
+
+    /* 모달 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -558,7 +605,7 @@
     .modal-item-name { font-weight: 600; font-size: 13px; color: var(--primary); }
     .modal-item-addr { font-size: 11.5px; color: #64748b; margin-top: 2px; }
 
-    /* 통합 푸터 */
+    /* 푸터 */
     .footer {
       padding: 24px 0 10px;
       border-top: 1px solid var(--border-color);
@@ -568,9 +615,7 @@
       color: #64748b;
     }
 
-    /* ==========================================================================
-       ★ 모바일 반응형 전용 정밀 스타일 (화면 폭 768px 이하)
-       ========================================================================== */
+    /* 모바일 반응형 */
     @media screen and (max-width: 768px) {
       body { padding: 10px 8px 36px; }
       .header { padding: 14px; }
@@ -579,42 +624,18 @@
       
       .mobile-tab-bar { display: flex; }
       .app-main { flex-direction: column; gap: 12px; }
-      .input-panel, .preview-panel {
-        width: 100%;
-        max-width: 100%;
-        flex: none;
-      }
-      .input-panel {
-        max-height: none;
-        overflow-y: visible;
-        padding: 13px;
-      }
+      .input-panel, .preview-panel { width: 100%; max-width: 100%; flex: none; }
+      .input-panel { max-height: none; overflow-y: visible; padding: 13px; }
       .preview-panel { display: none; }
       .action-bar { justify-content: center; }
 
-      /* 1. 입력창 삐져나옴 완벽 해결 (모바일 1열화 및 안전 폭 보장) */
-      .form-grid {
-        grid-template-columns: 1fr !important; /* 모바일에서 1열로 시원하게 배치 */
-        gap: 8px;
-      }
-      .form-grid.mobile-col-2 {
-        grid-template-columns: 1fr 1fr !important; /* 시작일시, 종료일시 등 간단한 2개만 2열 */
-      }
-      .form-group {
-        grid-column: span 1 !important;
-      }
+      .form-grid { grid-template-columns: 1fr !important; gap: 8px; }
+      .form-grid.mobile-col-2 { grid-template-columns: 1fr 1fr !important; }
+      .form-group { grid-column: span 1 !important; }
 
-      /* 2. 운임 내역 테이블 -> 모바일 전용 반응형 카드(Card) UI로 전면 개편 */
-      .fare-table-wrap {
-        overflow-x: visible; /* 가로스크롤 완전 제거 */
-      }
-      .fare-table, .fare-table tbody {
-        display: block;
-        width: 100%;
-      }
-      .fare-table thead {
-        display: none; /* 표 헤더 숨김 */
-      }
+      .fare-table-wrap { overflow-x: visible; }
+      .fare-table, .fare-table tbody { display: block; width: 100%; }
+      .fare-table thead { display: none; }
       .fare-table tbody tr {
         display: grid;
         grid-template-columns: 1.1fr 1fr auto;
@@ -627,43 +648,22 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         align-items: center;
       }
-      .fare-table td {
-        border: none !important;
-        padding: 0 !important;
-        text-align: left !important;
-        display: block;
-        width: 100%;
-      }
-      /* 각 TD의 모바일 카드 내 배치 */
-      .fare-table td:nth-child(1) { grid-column: 1 / 2; } /* 일자 */
-      .fare-table td:nth-child(2) { grid-column: 2 / 3; } /* 교통편 */
-      .fare-table td:nth-child(7) { grid-column: 3 / 4; grid-row: 1 / 2; } /* 삭제 버튼 */
-      .fare-table td:nth-child(3) { grid-column: 1 / 2; } /* 출발지 */
-      .fare-table td:nth-child(4) { grid-column: 2 / 4; } /* 도착지 */
-      .fare-table td:nth-child(5) { grid-column: 1 / 2; } /* 결제구분 */
-      .fare-table td:nth-child(6) { grid-column: 2 / 4; } /* 금액 */
-
-      .fare-table td input, .fare-table td select {
-        padding: 7px 8px;
-        font-size: 12.5px;
-      }
-      .fare-table td .btn-danger {
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-      }
+      .fare-table td { border: none !important; padding: 0 !important; text-align: left !important; display: block; width: 100%; }
+      .fare-table td:nth-child(1) { grid-column: 1 / 2; }
+      .fare-table td:nth-child(2) { grid-column: 2 / 3; }
+      .fare-table td:nth-child(7) { grid-column: 3 / 4; grid-row: 1 / 2; }
+      .fare-table td:nth-child(3) { grid-column: 1 / 2; }
+      .fare-table td:nth-child(4) { grid-column: 2 / 4; }
+      .fare-table td:nth-child(5) { grid-column: 1 / 2; }
+      .fare-table td:nth-child(6) { grid-column: 2 / 4; }
     }
 
     @media print {
-      body { background: transparent; padding: 0; }
-      .header, .mobile-tab-bar, .input-panel, .action-bar, .family-sites-card, .footer, .modal-overlay { display: none !important; }
+      body { background: transparent; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .header, .mobile-tab-bar, .input-panel, .action-bar, .footer, .modal-overlay { display: none !important; }
       .preview-panel { display: block !important; width: 100% !important; }
       .app-main, .container, .pdf-scroll-wrapper { display: block !important; width: 100%; margin: 0; padding: 0; }
-      #pdf-container { box-shadow: none; padding: 12mm; margin: 0; width: 100%; min-width: auto; height: 100vh; max-height: 100vh; }
+      #pdf-container { box-shadow: none; padding: 12mm 15mm; margin: 0; width: 100%; min-width: auto; height: 100vh; max-height: 100vh; }
     }
   </style>
 </head>
@@ -676,12 +676,12 @@
       <div class="title-area">
         <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
         <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
-        <span class="version-badge">20260905 0930</span>
+        <span class="version-badge">별지 제3호 서식 톤앤매너 완벽 정합</span>
       </div>
       <div class="header-right">
         <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
           <i class="fa-regular fa-envelope text-blue-600"></i>
-          <span>피드백 및 문의: <strong>hola3927@korea.kr</strong></span>
+          <span>피드백: <strong>hola3927@korea.kr</strong></span>
         </a>
         <div class="security-tag">
           <i class="fa-solid fa-shield-halved text-emerald-600"></i>
@@ -689,15 +689,16 @@
         </div>
       </div>
     </div>
-    <p class="subtitle">인사혁신처 공무원 여비업무 처리기준에 근거하여 식비·일비·숙박비·운임을 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다.</p>
+    <p class="subtitle">인사혁신처 공무원보수 등의 업무지침 제9장 [별지 제3호 서식]에 부합하도록 정통 공문서 톤앤매너로 출력하며, 끼니별/시간대별 식비 공제 및 특정인 일괄결제를 완벽 지원합니다.</p>
     
     <div class="guide-box">
-      <strong>출장 정산 기준 및 법적 근거 안내:</strong><br>
-      해당 계산은 <strong>「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.)</strong> 기준에 따라 산정됩니다. 식비·일비 1일 25,000원 정액(관용차 50% 감액) 및 숙박비 실비 상한(서울 10만, 광역시 8만, 기타 7만 원)을 적용하며, 실무상 필요 시 개별 항목 및 <strong>최종 청구액 수기 조정</strong>이 가능합니다.
+      <strong>출장 정산 기준 및 결제자 지정 안내:</strong><br>
+      해당 계산은 <strong>「공무원보수 등의 업무지침」(인사혁신처예규)</strong> 기준에 따라 산정됩니다. 
+      식비는 1일 25,000원 기준(3식)이며 출장 시간대 및 업무협의회비 등 제공 식사에 따라 끼니별 공제가 가능하며, 운임·숙박비 1인 일괄 결제 시 개인별 청구액이 정밀 배분됩니다.
     </div>
   </div>
 
-  <!-- 모바일 화면 전용 상단 탭 스위처 -->
+  <!-- 모바일 전용 탭 -->
   <div class="mobile-tab-bar">
     <button class="mobile-tab-btn active" id="btnTabInput" onclick="switchMobileView('input')">
       <i class="fa-solid fa-pen-to-square"></i> 여비 입력기
@@ -708,12 +709,12 @@
   </div>
 
   <div class="app-main">
-    <!-- 1. 좌측 입력 및 계산 패널 -->
+    <!-- 1. 좌측 입력 패널 -->
     <div class="input-panel" id="inputPanel">
       <div class="panel-header">
         <span><i class="fa-solid fa-sliders mr-1"></i> 여비 정산 입력기</span>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary btn-sm" onclick="saveUserDefault()" title="현재 소속, 직급, 성명을 브라우저에 저장">
+          <button class="btn btn-secondary btn-sm" onclick="saveUserDefault()" title="현재 1번 출장자 인적사항 저장">
             <i class="fa-regular fa-floppy-disk"></i> 내 정보 저장
           </button>
           <button class="btn btn-secondary btn-sm" onclick="copySummaryText()" title="메신저 보고용 요약 텍스트 복사">
@@ -722,51 +723,38 @@
         </div>
       </div>
 
-      <!-- 인적사항 -->
+      <!-- 1. 출장자 명단 -->
       <div class="section-box">
-        <div class="section-title">출장자 기본 인적사항</div>
-        <div class="form-grid mobile-col-2">
-          <div class="form-group">
-            <label>소속 기관명</label>
-            <input type="text" id="dept" value="부산광역시교육청" oninput="updateReport()">
-          </div>
-          <div class="form-group">
-            <label>직급 (직위)</label>
-            <input type="text" id="position" value="교사/주무관" oninput="updateReport()">
-          </div>
-          <div class="form-group">
-            <label>성명</label>
-            <input type="text" id="name" value="김교육" oninput="updateReport()">
-          </div>
-          <div class="form-group">
-            <label>여비 지급구분</label>
-            <select id="userGrade" onchange="calcAll()">
-              <option value="2" selected>제2호 (일반 공무원)</option>
-              <option value="1">제1호 (실·국장급 이상)</option>
-            </select>
-          </div>
+        <div class="section-title">
+          <span>출장자 명단 (<span id="travelerCountBadge" style="color:#2563eb;">1명</span>)</span>
+          <button class="btn btn-primary btn-sm" onclick="addTraveler()">
+            <i class="fa-solid fa-user-plus"></i> 출장자 추가
+          </button>
+        </div>
+        <div id="travelerListContainer">
+          <!-- 출장자 카드 -->
         </div>
       </div>
 
-      <!-- 출장 일정 및 시간 -->
+      <!-- 2. 출장 일정 및 시간 -->
       <div class="section-box">
         <div class="section-title">출장 일정 및 시간 (식비 산정 기준)</div>
         <div class="form-grid mobile-col-2">
           <div class="form-group">
-            <label>출장 시작일</label>
-            <input type="date" id="startDate" value="2026-09-04" onchange="handleDateChange()">
+            <label>출장 시작일 (기본: 어제)</label>
+            <input type="date" id="startDate" onchange="handleDateChange()">
           </div>
           <div class="form-group">
             <label>시작 시간</label>
-            <input type="time" id="startTime" value="09:00" onchange="updateReport()">
+            <input type="time" id="startTime" value="08:00" onchange="handleTimeChange()">
           </div>
           <div class="form-group">
-            <label>출장 종료일</label>
-            <input type="date" id="endDate" value="2026-09-05" onchange="handleDateChange()">
+            <label>출장 종료일 (기본: 오늘)</label>
+            <input type="date" id="endDate" onchange="handleDateChange()">
           </div>
           <div class="form-group">
             <label>종료 시간</label>
-            <input type="time" id="endTime" value="18:00" onchange="updateReport()">
+            <input type="time" id="endTime" value="18:00" onchange="handleTimeChange()">
           </div>
         </div>
         <div class="form-grid" style="margin-top:6px;">
@@ -789,30 +777,44 @@
         </div>
       </div>
 
-      <!-- 식비 / 일비 / 숙박비 설정 -->
+      <!-- 3. 식비 스마트 산정 (끼니별 변수 및 업무협의비 공제 완벽 대응) -->
       <div class="section-box">
         <div class="section-title">
-          <span>식비 / 일비 / 숙박비 산정</span>
-          <span style="font-size:11px; color:#dc2626;">* 필요 시 직접 수정 가능</span>
+          <span>식비 스마트 산정 (시간대 & 업무협의비 공제)</span>
+          <span style="font-size:11px; color:#2563eb;">1일 25,000원(3끼 기준)</span>
         </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>식비 일수</label>
-            <input type="number" id="mealDays" min="0" value="2" oninput="calcAll()">
-          </div>
-          <div class="form-group">
-            <label>식비 단가(원)</label>
-            <input type="number" id="mealUnitPrice" value="25000" step="1000" oninput="calcAll()">
-          </div>
-          <div class="form-group">
-            <label>식비 총 청구액(원)</label>
-            <input type="number" id="customMealTotal" value="50000" step="1000" oninput="applyManualAmounts()">
-          </div>
+        <div style="font-size:11.5px; color:#64748b; margin-bottom:6px;">
+          * 시간대에 따라 자동 체크되며, <strong>점심을 업무협의회비 등으로 사용한 경우 해당 끼니 체크를 해제</strong>하면 25,000원×2/3식=16,660원 등으로 자동 산정됩니다.
+        </div>
+        
+        <!-- 일자별 끼니 선택 컨테이너 -->
+        <div class="meal-schedule-box" id="mealScheduleContainer">
+          <!-- JS 동적 렌더링 -->
         </div>
 
-        <div class="form-grid" style="margin-top:6px;">
+        <div class="form-grid">
           <div class="form-group">
-            <label>일비 일수</label>
+            <label>총 인정 식수 (1인당)</label>
+            <input type="text" id="mealMealCountDisplay" value="6식" readonly style="background:#f8fafc; font-weight:700;">
+          </div>
+          <div class="form-group">
+            <label>1인당 식비 산출액(원)</label>
+            <input type="number" id="mealPerPersonAmount" value="50000" readonly style="background:#f8fafc; font-weight:700;">
+          </div>
+          <div class="form-group">
+            <label>식비 총 청구액 (인원수 반영)</label>
+            <input type="number" id="customMealTotal" value="50000" step="10" oninput="applyManualAmounts()">
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 일비 및 숙박비 설정 -->
+      <div class="section-box">
+        <div class="section-title">일비 및 숙박비 산정</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>일비 일수(1인당)</label>
             <input type="number" id="dailyDays" min="0" value="2" oninput="calcAll()">
           </div>
           <div class="form-group">
@@ -827,15 +829,15 @@
 
         <div class="form-grid" style="margin-top:6px;">
           <div class="form-group">
-            <label>숙박 일수(박)</label>
+            <label>숙박 일수(박/1인당)</label>
             <input type="number" id="lodgingNights" min="0" value="1" oninput="calcAll()">
           </div>
           <div class="form-group">
-            <label>실제 숙박 지출액(원)</label>
-            <input type="number" id="lodgingExpense" value="150000" step="1000" oninput="calcAll()">
+            <label>실제 숙박 총 지출액(원)</label>
+            <input type="number" id="lodgingExpense" value="100000" step="1000" oninput="calcAll()">
           </div>
           <div class="form-group">
-            <label>숙박비 인정액(원)</label>
+            <label>숙박비 총 인정액(원)</label>
             <input type="number" id="customLodgingTotal" value="100000" step="1000" oninput="applyManualAmounts()">
           </div>
         </div>
@@ -850,10 +852,10 @@
             </select>
           </div>
           <div class="form-group">
-            <label>숙박 결제 수단</label>
-            <select id="lodgingPayType" onchange="calcAll()">
-              <option value="personal" selected>개인청구</option>
+            <label>숙박 결제 수단 (개별 or 특정인)</label>
+            <select id="lodgingPayType" onchange="applyManualAmounts()">
               <option value="corp">법인카드</option>
+              <option value="personal_split" selected>개인 (각자 균등 청구)</option>
             </select>
           </div>
         </div>
@@ -861,14 +863,18 @@
           <input type="checkbox" id="lodgingExtra30" onchange="calcAll()">
           <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가인정</label>
         </div>
+        <div class="form-group" style="margin-top:6px;">
+          <label>숙박비 초과지출 사유 (별지 서식 표기용)</label>
+          <input type="text" id="lodgingExcessReason" placeholder="숙박비 상향 시 사유 기재 (예: 행사 지정호텔 만실 등)" oninput="updateReport()">
+        </div>
       </div>
 
-      <!-- 운임 내역 -->
+      <!-- 5. 운임 내역 (대중교통 / 자가용) -->
       <div class="section-box">
         <div class="section-title">
           <span>운임 내역 (대중교통 / 자가용)</span>
           <div style="display:flex; gap:5px;">
-            <button class="btn btn-secondary btn-sm" onclick="duplicateRoundTripFare()" title="첫 번째 편도 운임을 기반으로 역방향 귀임 행 생성">
+            <button class="btn btn-secondary btn-sm" onclick="duplicateRoundTripFare()" title="첫 번째 운임을 역방향으로 복제">
               <i class="fa-solid fa-repeat"></i> 왕복 복제
             </button>
             <button class="btn btn-primary btn-sm" onclick="addFareRow()">
@@ -920,7 +926,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label>유가 (원/L 또는 단위)</label>
+              <label>유가 (원/단위)</label>
               <div class="input-with-btn">
                 <input type="number" id="fuelPrice" value="1685">
                 <button class="btn btn-secondary btn-sm" onclick="fetchOpinetPrice()">오피넷</button>
@@ -932,12 +938,10 @@
             </div>
           </div>
 
-          <!-- 유가 고시 기준 안내 박스 -->
           <div class="fuel-standard-info">
             <div><i class="fa-solid fa-circle-info text-blue-600"></i> <strong>유가 및 충전단가 적용 기준 안내</strong></div>
-            <div>• <strong>휘발유·경유·LPG</strong>: <strong>출장 시작일 기준</strong> <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">한국석유공사 유가정보서비스(오피넷)</a> 고시 전국 평균가</div>
-            <div>• <strong>전기차</strong>: <a href="https://ev.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 무공해차 통합누리집</a> 충전요금 참고</div>
-            <div>• <strong>수소차</strong>: <a href="https://www.h2nbiz.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 수소유통정보시스템</a> 고시 충전가격 참고</div>
+            <div>• <strong>휘발유·경유·LPG</strong>: <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">오피넷</a> 출장 시작일 기준 전국 평균가</div>
+            <div>• <strong>전기·수소차</strong>: 무공해차 통합누리집 및 수소유통정보시스템 고시 충전가격 참고</div>
           </div>
 
           <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
@@ -948,75 +952,53 @@
           </div>
         </div>
 
-        <!-- 운임 입력 영역 (모바일: 카드형 레이아웃 / PC: 표) -->
+        <!-- 운임 입력 영역 -->
         <div class="fare-table-wrap">
           <table class="fare-table" id="fareInputTable">
             <thead>
               <tr>
-                <th width="16%">일자</th>
-                <th width="16%">교통편</th>
-                <th width="18%">출발지</th>
-                <th width="18%">도착지</th>
-                <th width="13%">결제구분</th>
-                <th width="14%">금액(원)</th>
+                <th width="15%">일자</th>
+                <th width="15%">교통편</th>
+                <th width="17%">출발지</th>
+                <th width="17%">도착지</th>
+                <th width="18%">결제자 (출장자별)</th>
+                <th width="13%">금액(원)</th>
                 <th width="5%">삭제</th>
               </tr>
             </thead>
-            <tbody id="fareTbody">
-              <tr>
-                <td><input type="date" value="2026-09-04" class="f-date" onchange="calcAll()"></td>
-                <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
-                <td><input type="text" value="부산(교육청)" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
-                <td><input type="text" value="서울(코엑스)" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
-                <td>
-                  <select class="f-pay" onchange="calcAll()">
-                    <option value="personal" selected>개인</option>
-                    <option value="corp">법인카드</option>
-                  </select>
-                </td>
-                <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
-                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="date" value="2026-09-05" class="f-date" onchange="calcAll()"></td>
-                <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
-                <td><input type="text" value="서울(코엑스)" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
-                <td><input type="text" value="부산(교육청)" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
-                <td>
-                  <select class="f-pay" onchange="calcAll()">
-                    <option value="personal" selected>개인</option>
-                    <option value="corp">법인카드</option>
-                  </select>
-                </td>
-                <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
-                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
-              </tr>
-            </tbody>
+            <tbody id="fareTbody"></tbody>
           </table>
+          <div id="fareEmptyNotice" style="padding:16px; text-align:center; color:#94a3b8; font-size:12px; border:1px dashed #cbd5e1; border-radius:6px; margin-top:6px;">
+            등록된 운임 내역이 없습니다. <strong>[+ 항목 추가]</strong> 또는 <strong>[자가용 운임에 반영]</strong>을 눌러주세요.
+          </div>
+          <div class="fare-summary-bar">
+            <span>운임 합계</span>
+            <span id="fareInputTotalSummary">총 0원 (개인: 0원 / 법인카드: 0원)</span>
+          </div>
         </div>
       </div>
 
-      <!-- 최종 여비지급액 수기조정 및 사유 입력 -->
+      <!-- 6. 최종 여비지급액 수기조정 -->
       <div class="section-box" style="background:#fefce8; border-color:#fde047;">
         <div class="section-title" style="color:#a16207;">
           <span><i class="fa-solid fa-pen-to-square mr-1"></i> 최종 여비지급액(개인청구액) 직접 조정</span>
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label style="color:#854d0e;">최종 개인청구 지급액 수기 수정(원)</label>
-            <input type="number" id="manualFinalClaim" value="319600" step="100" oninput="applyFinalManualAdjustment()">
+            <label style="color:#854d0e;">개인청구 총 지급액 수기 수정(원)</label>
+            <input type="number" id="manualFinalClaim" value="0" step="100" oninput="applyFinalManualAdjustment()">
           </div>
           <div class="form-group">
             <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 표 반영)</label>
-            <input type="text" id="manualReason" value="기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)" placeholder="예: 숙박비 상한액 준수, 운임 실비 반영 등" oninput="applyFinalManualAdjustment()">
+            <input type="text" id="manualReason" value="기준 산정액 전액 청구" placeholder="예: 숙박비 상한액 준수, 운임 실비 반영 등" oninput="applyFinalManualAdjustment()">
           </div>
         </div>
       </div>
 
       <!-- 신청 일자 -->
       <div class="form-group" style="margin-top: 10px;">
-        <label>정산서 신청 일자</label>
-        <input type="date" id="signDate" value="2026-09-04" onchange="updateReport()">
+        <label>정산서 신청 일자 (기본: 오늘)</label>
+        <input type="date" id="signDate" onchange="updateReport()">
       </div>
     </div>
 
@@ -1031,189 +1013,144 @@
         </button>
       </div>
 
-      <!-- 모바일 화면에서 밀림 방지를 위한 스크롤 래퍼 -->
       <div class="pdf-scroll-wrapper">
         <div id="pdf-container">
+          <!-- 상단 헤더부 -->
           <div>
-            <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
-            <div class="doc-title">국내여비 정산 신청서</div>
+            <div class="doc-top-ref">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
+            <div class="doc-main-title">국내여비 정산 신청서</div>
 
-            <table class="report-table">
+            <!-- ★ [별지 제3호 서식] 정통 공문서 규격 표 -->
+            <table class="gov-report-table">
               <colgroup>
                 <col width="16%">
                 <col width="17%">
+                <col width="17%">
                 <col width="16%">
                 <col width="17%">
                 <col width="17%">
-                <col width="17%">
               </colgroup>
+              
+              <!-- 1. 인적사항 및 출장 일정 -->
               <tbody>
-                <!-- 기본정보 -->
                 <tr>
-                  <th>소 속</th>
-                  <td>
-                    <span id="viewDept" class="cell-auto-fit">부산광역시교육청</span>
-                  </td>
-                  <th>직급(직위)</th>
-                  <td>
-                    <span id="viewPosition" class="cell-auto-fit">교사/주무관</span>
-                  </td>
-                  <th>성 명</th>
-                  <td>
-                    <span id="viewName">김교육</span>
-                  </td>
-                </tr>
-                <!-- 출장 일정 -->
-                <tr>
-                  <th rowspan="2">출장(부임)<br>일 정</th>
-                  <th>일 시</th>
-                  <td colspan="4" class="text-left p-lr-8" id="viewPeriod">
-                    2026년 09월 04일 09:00 ~ 2026년 09월 05일 18:00
-                  </td>
+                  <th class="col-title">소 속</th>
+                  <td id="viewDept">부산광역시교육청</td>
+                  <th class="col-title">직급(직위)</th>
+                  <td id="viewPosition"></td>
+                  <th class="col-title">성 명</th>
+                  <td id="viewName">김교육</td>
                 </tr>
                 <tr>
-                  <th>출장(부임)지</th>
-                  <td colspan="4" class="text-left p-lr-8" id="viewDestLocation">서울특별시</td>
+                  <th rowspan="2" class="col-title">출장(부임)<br>일 정</th>
+                  <th class="col-title">일 시</th>
+                  <td colspan="4" class="text-left p-lr-6" id="viewPeriod">-</td>
                 </tr>
-
-                <!-- 식비 -->
                 <tr>
-                  <th>식 비</th>
-                  <th>단 가</th>
-                  <td id="viewMealUnit">25,000</td>
-                  <th>지급일수</th>
-                  <td id="viewMealDays">2일</td>
-                  <td class="text-right p-lr-8" id="viewMealTotal">50,000원</td>
-                </tr>
-
-                <!-- 일비 -->
-                <tr>
-                  <th>일 비</th>
-                  <th>단 가</th>
-                  <td id="viewDailyUnit">25,000</td>
-                  <th>지급일수</th>
-                  <td id="viewDailyDays">2일</td>
-                  <td class="text-right p-lr-8" id="viewDailyTotal">50,000원</td>
-                </tr>
-
-                <!-- 숙박비 -->
-                <tr>
-                  <th>숙 박 비</th>
-                  <th>단 가</th>
-                  <td id="viewLodgingUnit">100,000</td>
-                  <th>지급일수</th>
-                  <td id="viewLodgingDays">1박</td>
-                  <td class="text-right p-lr-8" id="viewLodgingTotal">100,000원</td>
-                </tr>
-
-                <!-- 운임 헤더 -->
-                <tr>
-                  <th rowspan="5" id="viewFareRowspan">운 임</th>
-                  <th>일 자</th>
-                  <th>교통편</th>
-                  <th>출발지</th>
-                  <th>도착지</th>
-                  <th>금 액</th>
+                  <th class="col-title">출장(부임)지</th>
+                  <td colspan="4" class="text-left p-lr-6" id="viewDestLocation">서울특별시</td>
                 </tr>
               </tbody>
-              <tbody id="viewFareTbody"></tbody>
+
+              <!-- 2. 식비 / 일비 / 숙박비 (금액 하단에 정밀 산정내역 주기) -->
               <tbody>
                 <tr>
-                  <th colspan="2">합 계</th>
-                  <td colspan="4" class="text-right p-lr-8" style="font-weight:600;">
-                    법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
-                    개인: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
-                    소계: <span id="viewTotalSum">0</span>원
+                  <th class="col-title">식 비</th>
+                  <th class="col-title">단 가</th>
+                  <td id="viewMealUnit">25,000</td>
+                  <th class="col-title">지급식수</th>
+                  <td id="viewMealDays">2일</td>
+                  <td class="text-right p-lr-6">
+                    <div id="viewMealTotal" style="font-weight:bold;">50,000원</div>
+                    <div class="sub-calc-note" id="viewMealSubNote">(산정: 25,000원 × 2일)</div>
                   </td>
                 </tr>
-                <!-- 여비지급액 및 조정사유 산출근거 -->
                 <tr>
-                  <th colspan="2">여비지급액<br>(개인청구액)</th>
-                  <td colspan="4" class="text-right p-lr-8">
-                    <div style="font-size:14px; font-weight: bold; color:#000;">
-                      금 <span id="viewFinalClaim">319,600</span> 원
+                  <th class="col-title">일 비</th>
+                  <th class="col-title">단 가</th>
+                  <td id="viewDailyUnit">25,000</td>
+                  <th class="col-title">지급일수</th>
+                  <td id="viewDailyDays">2일</td>
+                  <td class="text-right p-lr-6">
+                    <div id="viewDailyTotal" style="font-weight:bold;">50,000원</div>
+                    <div class="sub-calc-note" id="viewDailySubNote"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="col-title">숙 박 비</th>
+                  <th class="col-title">상한액</th>
+                  <td id="viewLodgingCap">100,000원</td>
+                  <th class="col-title">실제소요액</th>
+                  <td id="viewLodgingExpense">100,000원</td>
+                  <td class="text-right p-lr-6">
+                    <div id="viewLodgingTotal" style="font-weight:bold;">100,000원</div>
+                    <div class="sub-calc-note" id="viewLodgingSubNote"></div>
+                  </td>
+                </tr>
+              </tbody>
+
+              <!-- 3. 운임 전용 tbody -->
+              <tbody id="viewFareTbody">
+                <!-- JS 동적 렌더링 -->
+              </tbody>
+
+              <!-- 4. 총 합계 및 여비지급액 -->
+              <tbody>
+                <tr>
+                  <th colspan="2" class="col-title">합 계</th>
+                  <td colspan="4" class="text-right p-lr-6" style="font-weight:bold;">
+                    법인카드: <span id="viewCorpSum">0</span>원 &nbsp;|&nbsp;
+                    개인청구: <span id="viewPersonalSum">0</span>원 &nbsp;|&nbsp;
+                    총계: <span id="viewTotalSum">0</span>원
+                  </td>
+                </tr>
+                <tr>
+                  <th colspan="2" class="col-title">여비지급액<br>(개인청구액)</th>
+                  <td colspan="4" class="text-right p-lr-6">
+                    <div id="viewPersonalDistribution" style="font-size:11pt; font-weight:bold; color:#000;">
+                      금 0 원
                     </div>
-                    <div class="calc-reason-note" id="viewReasonNote">
-                      [사유 및 산출근거] 기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)
+                    <div class="sub-calc-note" id="viewReasonNote">
+                      [산출근거] 기준 산정액 전액 청구
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <!-- 규정 문구 및 서명란 -->
+            <!-- 하단 신청문 및 결재 서명란 -->
             <div class="statement-box">
               <div class="rule-text">
-                「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+                「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 국내여비의 정산을 신청합니다.
               </div>
               <div class="attach-text">
-                첨부 : 신용카드 매출전표 등 1부.  끝.
+                첨부 : 신용카드 매출전표 등 1부. &nbsp;끝.
               </div>
-              <div class="sign-date" id="viewSignDate">
-                2026년 09월 04일
+              <div class="sign-date-center" id="viewSignDate">
+                2026년 09월 05일
               </div>
-              <div class="sign-name">
-                신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<span id="viewSignName" style="font-weight:bold;">김교육</span>&nbsp;&nbsp;&nbsp;&nbsp;(인)
+              <div class="sign-name-container" id="viewSignContainer">
+                <div>신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;김교육&nbsp;&nbsp;&nbsp;&nbsp;(서명 또는 인)</div>
+              </div>
+              <div class="agency-head-seal">
+                소속기관장 귀하
               </div>
             </div>
           </div>
 
-          <!-- 예규 기준 안내 각주 -->
-          <div class="doc-footer-legal">
+          <!-- 별지 제3호 서식 유의사항 및 규격 푸터 -->
+          <div>
+            <div class="legal-notice-box">
+              <strong>[유의사항]</strong><br>
+              1. 정산하는 여비 항목 중 운임은 국내여행에 한함. 다만, 국내외 항공운임은 별지 제5호 서식에 의함.<br>
+              2. 「공무원 여비 규정」 제16조 제1항 단서에 따라 숙박비를 상향하는 경우 '초과지출 사유' 작성.
+            </div>
+            <div class="doc-footer-spec">
+              <span>제9장 공무원여비업무 처리기준</span>
+              <span>210mm×297㎜[백상지 80g/㎡]</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 기타 업무 지원 프로그램 안내 영역 -->
-  <div class="family-sites-card">
-    <div class="family-sites-title">
-      <i class="fa-solid fa-shapes text-blue-600"></i> 기타 업무 지원 프로그램
-    </div>
-    <div class="family-grid">
-      <!-- 여비 -->
-      <div class="family-item">
-        <div>
-          <span class="family-item-badge">[여비]</span>
-          <div class="family-item-name">관외 여비 산출기</div>
-          <div class="family-item-desc">
-            • 근무지외 국내출장 여비를 산출합니다.<br>
-            • 출발지와 도착지 명칭 검색만으로도 최적 주행거리와 통행료를 자동 계산합니다.<br>
-            • 유종별 연비와 전국 평균 유가를 기반으로 유류비를 오차 없이 즉시 산출합니다.
-          </div>
-        </div>
-        <a href="https://hola3927.github.io/travel_expense/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/travel_expense/
-        </a>
-      </div>
-
-      <!-- 교육비특별회계 1 -->
-      <div class="family-item">
-        <div>
-          <span class="family-item-badge" style="color:#047857;">[교육비특별회계 세출예산]</span>
-          <div class="family-item-name">부산시교육청 예산 정리 프로그램</div>
-          <div class="family-item-desc">
-            • K-에듀파인 예산현액 엑셀파일 일괄 분석 및 통계 집계 도구
-          </div>
-        </div>
-        <a href="https://hola3927.github.io/budget-dashboard/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/budget-dashboard/
-        </a>
-      </div>
-
-      <!-- 교육비특별회계 2 -->
-      <div class="family-item">
-        <div>
-          <span class="family-item-badge" style="color:#047857;">[교육비특별회계 세출예산]</span>
-          <div class="family-item-name">집행실적(102-A) 분석 프로그램</div>
-          <div class="family-item-desc">
-            • K-에듀파인 102-A 장부 일괄 분석 및 세출 집행실적 시각화 도구
-          </div>
-        </div>
-        <a href="https://hola3927.github.io/budget-log-102a/" target="_blank" rel="noopener noreferrer" class="family-link-btn">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> https://hola3927.github.io/budget-log-102a/
-        </a>
       </div>
     </div>
   </div>
@@ -1221,10 +1158,10 @@
   <!-- 푸터 -->
   <div class="footer">
     <p style="margin: 0 0 4px 0; font-weight: 700; color: #334155;">
-      Designed & Developed by 윤상 &copy; 2026. All Rights Reserved.
+      Designed & Developed for Educational Administration &copy; 2026. All Rights Reserved.
     </p>
     <p style="margin: 0; color: #94a3b8;">
-      본 프로그램은 교육행정 업무 효율화를 위해 자체 개발된 분석 도구입니다. &nbsp;|&nbsp; 문의: <a href="mailto:hola3927@korea.kr" style="color: #2563eb; font-weight: 600; text-decoration: none;">hola3927@korea.kr</a>
+      본 프로그램은 공무원 여비업무 처리기준을 준수합니다. &nbsp;|&nbsp; 문의: <a href="mailto:hola3927@korea.kr" style="color: #2563eb; font-weight: 600; text-decoration: none;">hola3927@korea.kr</a>
     </p>
   </div>
 </div>
@@ -1233,11 +1170,11 @@
 <div class="modal-overlay" id="searchModal">
   <div class="modal-content">
     <div class="modal-header">
-      <span id="modalTitle">장소/위치 검색 (카카오 REST API)</span>
+      <span id="modalTitle">장소/위치 검색</span>
       <button class="btn btn-sm btn-secondary" onclick="closeSearchModal()">닫기</button>
     </div>
     <div style="display:flex; gap:6px;">
-      <input type="text" id="modalKeyword" style="flex:1; padding:7px; border:1px solid #cbd5e0; border-radius:4px; font-size:13px;" placeholder="장소명 입력 (예: 코엑스, 부산광역시교육청)" onkeyup="if(event.key==='Enter') executeKakaoSearch()">
+      <input type="text" id="modalKeyword" style="flex:1; padding:7px; border:1px solid #cbd5e0; border-radius:4px; font-size:13px;" placeholder="장소명 입력" onkeyup="if(event.key==='Enter') executeKakaoSearch()">
       <button class="btn btn-primary" onclick="executeKakaoSearch()">검색</button>
     </div>
     <div class="modal-list" id="modalResultList">
@@ -1252,14 +1189,10 @@
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     e.preventDefault();
   });
-
   document.addEventListener('keydown', function(e) {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-    if (e.ctrlKey && ['u', 's', 'c'].includes(e.key.toLowerCase())) {
-      e.preventDefault();
-      return false;
-    }
+    if (e.ctrlKey && ['u', 's', 'c'].includes(e.key.toLowerCase())) { e.preventDefault(); return false; }
   });
 
   const KAKAO_REST_KEY = "16823e989fa9c32d2977eba18c6856c5";
@@ -1271,7 +1204,292 @@
     carDest: { x: "127.0588", y: "37.5126" }
   };
 
-  /* 모바일 뷰 전환 함수 */
+  /* 출장자 명단 */
+  let travelers = [
+    {
+      id: "t_1",
+      dept: "부산광역시교육청",
+      pos: "",
+      name: "김교육",
+      grade: "2"
+    }
+  ];
+
+  /* 일자별 끼니 선택 상태 배열 */
+  let mealScheduleData = [];
+
+  function renderTravelersUI() {
+    const container = document.getElementById('travelerListContainer');
+    container.innerHTML = '';
+    const countBadge = document.getElementById('travelerCountBadge');
+    countBadge.innerText = `${travelers.length}명`;
+
+    travelers.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = 'traveler-card';
+      card.innerHTML = `
+        <div class="traveler-card-header">
+          <span><i class="fa-solid fa-user text-blue-600"></i> 출장자 ${idx + 1}</span>
+          ${travelers.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeTraveler(${idx})" title="출장자 삭제"><i class="fa-solid fa-trash-can"></i> 삭제</button>` : ''}
+        </div>
+        <div class="form-grid mobile-col-2">
+          <div class="form-group">
+            <label>소속 기관명</label>
+            <input type="text" value="${t.dept}" oninput="updateTravelerData(${idx}, 'dept', this.value)">
+          </div>
+          <div class="form-group">
+            <label>직급 (직위)</label>
+            <input type="text" value="${t.pos}" placeholder="직급(직위) 입력" oninput="updateTravelerData(${idx}, 'pos', this.value)">
+          </div>
+          <div class="form-group">
+            <label>성명</label>
+            <input type="text" value="${t.name}" oninput="updateTravelerData(${idx}, 'name', this.value)">
+          </div>
+          <div class="form-group">
+            <label>여비 지급구분</label>
+            <select onchange="updateTravelerData(${idx}, 'grade', this.value)">
+              <option value="2" ${t.grade === "2" ? "selected" : ""}>제2호 (일반)</option>
+              <option value="1" ${t.grade === "1" ? "selected" : ""}>제1호 (임원/연구관급)</option>
+            </select>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    refreshPaymentSelectOptions();
+    calcAll();
+  }
+
+  function addTraveler() {
+    const prev = travelers[travelers.length - 1];
+    const newIdx = travelers.length + 1;
+    travelers.push({
+      id: `t_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+      dept: prev ? prev.dept : "부산광역시교육청",
+      pos: "",
+      name: `출장자${newIdx}`,
+      grade: "2"
+    });
+    renderTravelersUI();
+  }
+
+  function removeTraveler(idx) {
+    if (travelers.length <= 1) {
+      alert("출장자는 최소 1명 이상이어야 합니다.");
+      return;
+    }
+    travelers.splice(idx, 1);
+    renderTravelersUI();
+  }
+
+  function updateTravelerData(idx, field, value) {
+    travelers[idx][field] = value;
+    if (field === 'name') refreshPaymentSelectOptions();
+    updateReport();
+  }
+
+  function refreshPaymentSelectOptions() {
+    const lodgingSelect = document.getElementById('lodgingPayType');
+    const currentLodgingVal = lodgingSelect.value;
+    
+    let lodgingHTML = `
+      <option value="corp">법인카드</option>
+      <option value="personal_split">개인 (각자 균등 분할)</option>
+    `;
+    travelers.forEach(t => {
+      lodgingHTML += `<option value="single_${t.id}">개인: ${t.name} (전액 일괄결제)</option>`;
+    });
+    lodgingSelect.innerHTML = lodgingHTML;
+    if (lodgingSelect.querySelector(`option[value="${currentLodgingVal}"]`)) {
+      lodgingSelect.value = currentLodgingVal;
+    } else {
+      lodgingSelect.value = "personal_split";
+    }
+
+    const farePaySelects = document.querySelectorAll('.f-pay');
+    farePaySelects.forEach(sel => {
+      const currentVal = sel.value;
+      let fareHTML = `
+        <option value="corp">법인카드</option>
+        <option value="personal_split">개인 (각자 균등 분할)</option>
+      `;
+      travelers.forEach(t => {
+        fareHTML += `<option value="single_${t.id}">개인: ${t.name}</option>`;
+      });
+      sel.innerHTML = fareHTML;
+      if (sel.querySelector(`option[value="${currentVal}"]`)) {
+        sel.value = currentVal;
+      } else {
+        sel.value = "personal_split";
+      }
+    });
+  }
+
+  function initDefaultDates() {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const fmt = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    document.getElementById('startDate').value = fmt(yesterday);
+    document.getElementById('startTime').value = "08:00";
+    document.getElementById('endDate').value = fmt(today);
+    document.getElementById('endTime').value = "18:00";
+    document.getElementById('signDate').value = fmt(today);
+
+    handleDateChange();
+  }
+
+  function handleDateChange() {
+    const sDate = new Date(document.getElementById('startDate').value);
+    const eDate = new Date(document.getElementById('endDate').value);
+    if (!isNaN(sDate) && !isNaN(eDate) && eDate >= sDate) {
+      const diffTime = eDate.getTime() - sDate.getTime();
+      const days = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
+      const nights = days > 1 ? days - 1 : 0;
+      document.getElementById('dailyDays').value = days;
+      document.getElementById('lodgingNights').value = nights;
+
+      buildMealScheduleData(days);
+    }
+    calcAll();
+  }
+
+  function handleTimeChange() {
+    buildMealScheduleData();
+    calcAll();
+  }
+
+  /* ==========================================================================
+     ★ 스마트 식비 산정 엔진 (시간대 & 끼니별 제외 지원)
+     ========================================================================== */
+  function buildMealScheduleData(explicitDays) {
+    const sDateStr = document.getElementById('startDate').value;
+    const eDateStr = document.getElementById('endDate').value;
+    const sTime = document.getElementById('startTime').value || "08:00";
+    const eTime = document.getElementById('endTime').value || "18:00";
+
+    const sDate = new Date(sDateStr);
+    const eDate = new Date(eDateStr);
+    if (isNaN(sDate) || isNaN(eDate) || eDate < sDate) return;
+
+    const diffDays = Math.floor((eDate.getTime() - sDate.getTime()) / (1000 * 3600 * 24)) + 1;
+    const days = explicitDays || diffDays;
+
+    mealScheduleData = [];
+
+    for (let i = 0; i < days; i++) {
+      const curDate = new Date(sDate);
+      curDate.setDate(curDate.getDate() + i);
+      const curDateStr = `${curDate.getMonth() + 1}/${curDate.getDate()}`;
+
+      let b = true, l = true, d = true;
+
+      if (days === 1) {
+        // 당일 출장 시간대 판정
+        b = (sTime <= "08:00");
+        l = (sTime <= "12:30" && eTime >= "12:30");
+        d = (eTime >= "18:00");
+      } else {
+        if (i === 0) {
+          // 첫날
+          b = (sTime <= "08:00");
+          l = (sTime <= "12:30");
+          d = true;
+        } else if (i === days - 1) {
+          // 마지막날
+          b = true;
+          l = (eTime >= "12:30");
+          d = (eTime >= "18:00");
+        } else {
+          // 중간날
+          b = true; l = true; d = true;
+        }
+      }
+
+      mealScheduleData.push({
+        dayIdx: i + 1,
+        dateStr: curDateStr,
+        breakfast: b,
+        lunch: l,
+        dinner: d
+      });
+    }
+
+    renderMealScheduleUI();
+  }
+
+  function renderMealScheduleUI() {
+    const container = document.getElementById('mealScheduleContainer');
+    container.innerHTML = '';
+
+    mealScheduleData.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'meal-day-row';
+      row.innerHTML = `
+        <span class="meal-day-label">${item.dayIdx}일차 (${item.dateStr})</span>
+        <div class="meal-options">
+          <label class="meal-check-item">
+            <input type="checkbox" ${item.breakfast ? "checked" : ""} onchange="toggleMealOption(${idx}, 'breakfast', this.checked)"> 조식
+          </label>
+          <label class="meal-check-item">
+            <input type="checkbox" ${item.lunch ? "checked" : ""} onchange="toggleMealOption(${idx}, 'lunch', this.checked)"> 중식
+          </label>
+          <label class="meal-check-item">
+            <input type="checkbox" ${item.dinner ? "checked" : ""} onchange="toggleMealOption(${idx}, 'dinner', this.checked)"> 석식
+          </label>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function toggleMealOption(dayIdx, mealType, isChecked) {
+    if (mealScheduleData[dayIdx]) {
+      mealScheduleData[dayIdx][mealType] = isChecked;
+      calcAll();
+    }
+  }
+
+  /* 식비 산출 핵심 계산 */
+  function computeMealDetails() {
+    let totalMeals = 0;
+    let totalPerPerson = 0;
+    let breakdownArr = [];
+
+    mealScheduleData.forEach(day => {
+      let count = (day.breakfast ? 1 : 0) + (day.lunch ? 1 : 0) + (day.dinner ? 1 : 0);
+      totalMeals += count;
+
+      let dayCost = 0;
+      if (count === 3) dayCost = 25000;
+      else if (count === 2) dayCost = 16660; // 25,000 * 2/3 (원단위 절사)
+      else if (count === 1) dayCost = 8330;  // 25,000 * 1/3 (원단위 절사)
+      else dayCost = 0;
+
+      totalPerPerson += dayCost;
+      breakdownArr.push(`${day.dayIdx}일차 ${count}식(${dayCost.toLocaleString()}원)`);
+    });
+
+    return { totalMeals, totalPerPerson, breakdownArr };
+  }
+
+  function formatReportDate(dateStr) {
+    if (!dateStr) return '-';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[0]}. ${parseInt(parts[1], 10)}. ${parseInt(parts[2], 10)}.`;
+    }
+    return dateStr;
+  }
+
   function switchMobileView(view) {
     const inputPanel = document.getElementById('inputPanel');
     const previewPanel = document.getElementById('previewPanel');
@@ -1292,7 +1510,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* 반응형 리사이즈 감지 */
   window.addEventListener('resize', function() {
     const inputPanel = document.getElementById('inputPanel');
     const previewPanel = document.getElementById('previewPanel');
@@ -1305,12 +1522,12 @@
     }
   });
 
-  /* 검색 모달 제어 */
+  /* 카카오 위치 검색 모달 */
   function openSearchModal(targetId) {
     currentSearchTarget = targetId;
     const targetVal = document.getElementById(targetId).value;
     document.getElementById('modalKeyword').value = targetVal;
-    document.getElementById('modalTitle').innerText = (targetId === 'carOrigin' ? '출발지' : '도착지') + ' 검색 (카카오 REST API)';
+    document.getElementById('modalTitle').innerText = (targetId === 'carOrigin' ? '출발지' : '도착지') + ' 검색';
     document.getElementById('searchModal').style.display = 'flex';
     if (targetVal) executeKakaoSearch();
   }
@@ -1322,20 +1539,15 @@
   async function executeKakaoSearch() {
     const keyword = document.getElementById('modalKeyword').value.trim();
     const resultList = document.getElementById('modalResultList');
-    if (!keyword) {
-      alert("검색어를 입력하세요.");
-      return;
-    }
+    if (!keyword) { alert("검색어를 입력하세요."); return; }
 
-    resultList.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">카카오 서버에서 검색 중...</div>';
-
+    resultList.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">검색 중...</div>';
     try {
       const resp = await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(keyword)}`, {
         headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
       });
       if (!resp.ok) throw new Error('API 호출 실패');
       const data = await resp.json();
-
       if (data.documents && data.documents.length > 0) {
         resultList.innerHTML = '';
         data.documents.forEach(doc => {
@@ -1349,9 +1561,7 @@
             document.getElementById(currentSearchTarget).value = doc.place_name;
             geoCoords[currentSearchTarget] = { x: doc.x, y: doc.y };
             closeSearchModal();
-            if (geoCoords.carOrigin && geoCoords.carDest) {
-              fetchKakaoNaviRoute();
-            }
+            if (geoCoords.carOrigin && geoCoords.carDest) fetchKakaoNaviRoute();
           };
           resultList.appendChild(item);
         });
@@ -1359,15 +1569,15 @@
         resultList.innerHTML = `
           <div style="padding:20px; text-align:center; color:#dc2626; font-size:12px;">
             검색 결과가 없습니다.<br>
-            <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색 열기</button>
+            <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색</button>
           </div>
         `;
       }
     } catch (err) {
       resultList.innerHTML = `
         <div style="padding:20px; text-align:center; color:#dc2626; font-size:12px;">
-          카카오 장소 검색 제한 발생. 도로명 주소 검색을 이용하세요.<br>
-          <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색 열기</button>
+          검색 중 오류가 발생했습니다.<br>
+          <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openDaumPostcodeFallback()">도로명 주소검색</button>
         </div>
       `;
     }
@@ -1390,15 +1600,11 @@
       alert("출발지와 도착지를 검색하여 선택해 주세요.");
       return;
     }
-
     try {
       const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${originCoord.x},${originCoord.y}&destination=${destCoord.x},${destCoord.y}&priority=RECOMMEND`;
-      const resp = await fetch(url, {
-        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
-      });
+      const resp = await fetch(url, { headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` } });
       if (!resp.ok) throw new Error("Navi API Error");
       const data = await resp.json();
-
       if (data.routes && data.routes[0]) {
         const route = data.routes[0];
         const oneWayKm = (route.summary.distance / 1000);
@@ -1409,7 +1615,7 @@
         document.getElementById('carDistance').value = roundTripKm;
         document.getElementById('carToll').value = roundTripToll;
         updateCarPreview();
-        alert(`카카오 내비 경로 계산 완료!\n- 왕복 주행거리: ${roundTripKm} km\n- 왕복 통행료: ${roundTripToll.toLocaleString()}원`);
+        alert(`경로 계산 완료!\n- 왕복 주행거리: ${roundTripKm} km\n- 왕복 통행료: ${roundTripToll.toLocaleString()}원`);
       }
     } catch (err) {
       document.getElementById('carDistance').value = 804;
@@ -1441,19 +1647,16 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
-      <td><input type="text" value="자가용(연료/통행)" class="f-trans" placeholder="교통편 (예: 자가용)" oninput="calcAll()"></td>
+      <td><input type="text" value="자가용(연료/통행)" class="f-trans" placeholder="교통편" oninput="calcAll()"></td>
       <td><input type="text" value="${origin}" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
       <td><input type="text" value="${dest}" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
-      <td>
-        <select class="f-pay" onchange="calcAll()">
-          <option value="personal" selected>개인</option>
-          <option value="corp">법인카드</option>
-        </select>
-      </td>
-      <td><input type="number" value="${total}" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
+      <td><select class="f-pay" onchange="calcAll()"></select></td>
+      <td><input type="number" value="${total}" class="f-amount" placeholder="금액" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
+    refreshPaymentSelectOptions();
+    checkFareEmptyNotice();
     calcAll();
     alert(`자가용 운임 ${total.toLocaleString()}원이 운임표에 반영되었습니다.`);
   }
@@ -1481,23 +1684,15 @@
         updateCarPreview();
       }
     } catch (e) {
-      alert("오피넷 API 연동 상태이며, 전국 평균 고시 유가(1,685원)로 자동 세팅되었습니다.");
+      alert("오피넷 기준 전국 평균 유가(1,685원)로 자동 세팅되었습니다.");
       handleFuelChange();
     }
   }
 
-  function handleDateChange() {
-    const sDate = new Date(document.getElementById('startDate').value);
-    const eDate = new Date(document.getElementById('endDate').value);
-    if (!isNaN(sDate) && !isNaN(eDate) && eDate >= sDate) {
-      const diffTime = eDate.getTime() - sDate.getTime();
-      const days = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
-      const nights = days > 1 ? days - 1 : 0;
-      document.getElementById('mealDays').value = days;
-      document.getElementById('dailyDays').value = days;
-      document.getElementById('lodgingNights').value = nights;
-    }
-    calcAll();
+  function checkFareEmptyNotice() {
+    const rows = document.querySelectorAll('#fareTbody tr');
+    const notice = document.getElementById('fareEmptyNotice');
+    notice.style.display = rows.length === 0 ? 'block' : 'none';
   }
 
   function addFareRow() {
@@ -1506,19 +1701,16 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
-      <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
+      <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편" oninput="calcAll()"></td>
       <td><input type="text" value="부산" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
       <td><input type="text" value="서울" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
-      <td>
-        <select class="f-pay" onchange="calcAll()">
-          <option value="personal" selected>개인</option>
-          <option value="corp">법인카드</option>
-        </select>
-      </td>
-      <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
+      <td><select class="f-pay" onchange="calcAll()"></select></td>
+      <td><input type="number" value="59800" class="f-amount" placeholder="금액" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
+    refreshPaymentSelectOptions();
+    checkFareEmptyNotice();
     calcAll();
   }
 
@@ -1549,64 +1741,67 @@
       <td><input type="text" value="${firstTrans}" class="f-trans" placeholder="교통편" oninput="calcAll()"></td>
       <td><input type="text" value="${firstDest}" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
       <td><input type="text" value="${firstOrigin}" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
-      <td>
-        <select class="f-pay" onchange="calcAll()">
-          <option value="personal" ${firstPay === 'personal' ? 'selected' : ''}>개인</option>
-          <option value="corp" ${firstPay === 'corp' ? 'selected' : ''}>법인카드</option>
-        </select>
-      </td>
-      <td><input type="number" value="${firstAmount}" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
+      <td><select class="f-pay" onchange="calcAll()"></select></td>
+      <td><input type="number" value="${firstAmount}" class="f-amount" placeholder="금액" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
+    refreshPaymentSelectOptions();
+    const newSelect = row.querySelector('.f-pay');
+    if (newSelect) newSelect.value = firstPay;
+    checkFareEmptyNotice();
     calcAll();
   }
 
   function removeFareRow(btn) {
     btn.closest('tr').remove();
+    checkFareEmptyNotice();
     calcAll();
   }
 
-  /* 여비 계산 로직 */
+  /* ==========================================================================
+     ★ 전체 여비 자동 연산 & 별지 서식 동기화
+     ========================================================================== */
   function calcAll() {
-    const userGrade = document.getElementById('userGrade').value;
+    const numTravelers = travelers.length;
     const regionType = document.getElementById('regionType').value;
     const govCarUsed = document.getElementById('govCarUsed').checked;
 
-    // 1. 식비
-    const mealDays = parseInt(document.getElementById('mealDays').value) || 0;
-    const mealUnitPrice = parseInt(document.getElementById('mealUnitPrice').value) || 25000;
-    const calcMeal = mealDays * mealUnitPrice;
+    // 1. 식비 산출
+    const mealRes = computeMealDetails();
+    document.getElementById('mealMealCountDisplay').value = `${mealRes.totalMeals}식`;
+    document.getElementById('mealPerPersonAmount').value = mealRes.totalPerPerson;
+    const calcMeal = mealRes.totalPerPerson * numTravelers;
     document.getElementById('customMealTotal').value = calcMeal;
 
-    // 2. 일비
+    // 2. 일비 산출
     const dailyDays = parseInt(document.getElementById('dailyDays').value) || 0;
     let dailyUnitPrice = parseInt(document.getElementById('dailyUnitPrice').value) || 25000;
     if (govCarUsed) dailyUnitPrice = Math.round(dailyUnitPrice / 2);
-    const calcDaily = dailyDays * dailyUnitPrice;
+    const calcDaily = dailyDays * dailyUnitPrice * numTravelers;
     document.getElementById('customDailyTotal').value = calcDaily;
 
-    // 3. 숙박비
+    // 3. 숙박비 산출
     const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
     const lodgingExpense = parseInt(document.getElementById('lodgingExpense').value) || 0;
     const lodgingType = document.getElementById('lodgingType').value;
     const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
 
+    let capPerPerson = 70000;
+    if (regionType === 'seoul') capPerPerson = 100000;
+    else if (regionType === 'metro') capPerPerson = 80000;
+    else capPerPerson = 70000;
+
+    if (lodgingExtra30) capPerPerson = Math.round(capPerPerson * 1.3);
+
     let recognizedLodging = 0;
     if (lodgingType === 'none' || lodgingNights === 0) {
       recognizedLodging = 0;
     } else if (lodgingType === 'relative') {
-      recognizedLodging = lodgingNights * 20000;
+      recognizedLodging = lodgingNights * 20000 * numTravelers;
     } else {
-      let capPerNight = 70000;
-      if (userGrade === "1") capPerNight = 9999999;
-      else {
-        if (regionType === 'seoul') capPerNight = 100000;
-        else if (regionType === 'metro') capPerNight = 80000;
-        else capPerNight = 70000;
-      }
-      if (lodgingExtra30 && userGrade !== "1") capPerNight = Math.round(capPerNight * 1.3);
-      recognizedLodging = Math.min(lodgingExpense, capPerNight * lodgingNights);
+      const totalCap = capPerPerson * lodgingNights * numTravelers;
+      recognizedLodging = Math.min(lodgingExpense, totalCap);
     }
     document.getElementById('customLodgingTotal').value = recognizedLodging;
 
@@ -1614,19 +1809,62 @@
   }
 
   function applyManualAmounts() {
-    const mealDays = parseInt(document.getElementById('mealDays').value) || 0;
-    const mealUnit = parseInt(document.getElementById('mealUnitPrice').value) || 25000;
+    const numTravelers = travelers.length;
     const mealTotal = parseInt(document.getElementById('customMealTotal').value) || 0;
+    const mealRes = computeMealDetails();
 
     const dailyDays = parseInt(document.getElementById('dailyDays').value) || 0;
     const dailyUnit = parseInt(document.getElementById('dailyUnitPrice').value) || 25000;
     const dailyTotal = parseInt(document.getElementById('customDailyTotal').value) || 0;
 
     const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
+    const lodgingExpense = parseInt(document.getElementById('lodgingExpense').value) || 0;
     const lodgingTotal = parseInt(document.getElementById('customLodgingTotal').value) || 0;
-    const lodgingUnit = lodgingNights > 0 ? Math.round(lodgingTotal / lodgingNights) : lodgingTotal;
     const lodgingPayType = document.getElementById('lodgingPayType').value;
 
+    const travelerPersonalAmounts = {};
+    travelers.forEach(t => {
+      travelerPersonalAmounts[t.id] = 0;
+    });
+
+    // 1) 식비 & 일비 각자 균등 분할
+    if (numTravelers > 0) {
+      const mealPerPerson = Math.floor(mealTotal / numTravelers);
+      const dailyPerPerson = Math.floor(dailyTotal / numTravelers);
+      travelers.forEach((t, i) => {
+        travelerPersonalAmounts[t.id] += (mealPerPerson + dailyPerPerson);
+        if (i === 0) {
+          travelerPersonalAmounts[t.id] += (mealTotal - (mealPerPerson * numTravelers));
+          travelerPersonalAmounts[t.id] += (dailyTotal - (dailyPerPerson * numTravelers));
+        }
+      });
+    }
+
+    // 2) 숙박비 배분
+    let lodgingCorpSum = 0;
+    let lodgingPersonalSum = 0;
+    if (lodgingTotal > 0) {
+      if (lodgingPayType === 'corp') {
+        lodgingCorpSum = lodgingTotal;
+      } else if (lodgingPayType === 'personal_split') {
+        lodgingPersonalSum = lodgingTotal;
+        const lodgingPerPerson = Math.floor(lodgingTotal / numTravelers);
+        travelers.forEach((t, i) => {
+          travelerPersonalAmounts[t.id] += lodgingPerPerson;
+          if (i === 0) travelerPersonalAmounts[t.id] += (lodgingTotal - (lodgingPerPerson * numTravelers));
+        });
+      } else if (lodgingPayType.startsWith('single_')) {
+        lodgingPersonalSum = lodgingTotal;
+        const targetId = lodgingPayType.replace('single_', '');
+        if (travelerPersonalAmounts[targetId] !== undefined) {
+          travelerPersonalAmounts[targetId] += lodgingTotal;
+        } else {
+          travelerPersonalAmounts[travelers[0].id] += lodgingTotal;
+        }
+      }
+    }
+
+    // 3) 운임 계산 및 단일 tbody 렌더링
     const dates = document.querySelectorAll('.f-date');
     const trans = document.querySelectorAll('.f-trans');
     const origins = document.querySelectorAll('.f-origin');
@@ -1636,68 +1874,185 @@
 
     let fareCorpSum = 0;
     let farePersonalSum = 0;
-
-    const viewFareTbody = document.getElementById('viewFareTbody');
-    viewFareTbody.innerHTML = "";
     const rowCount = amounts.length;
-    document.getElementById('viewFareRowspan').setAttribute('rowspan', Math.max(rowCount + 1, 2));
 
     for (let i = 0; i < rowCount; i++) {
       const amt = parseInt(amounts[i].value) || 0;
-      if (pays[i].value === 'corp') fareCorpSum += amt;
-      else farePersonalSum += amt;
+      const payVal = pays[i].value;
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${dates[i].value || '-'}</td>
-        <td>${trans[i].value || '-'}</td>
-        <td>${origins[i].value || '-'}</td>
-        <td>${dests[i].value || '-'}</td>
-        <td class="text-right p-lr-8">${amt.toLocaleString()}원</td>
+      if (payVal === 'corp') {
+        fareCorpSum += amt;
+      } else if (payVal === 'personal_split') {
+        farePersonalSum += amt;
+        const farePerPerson = Math.floor(amt / numTravelers);
+        travelers.forEach((t, tidx) => {
+          travelerPersonalAmounts[t.id] += farePerPerson;
+          if (tidx === 0) travelerPersonalAmounts[t.id] += (amt - (farePerPerson * numTravelers));
+        });
+      } else if (payVal.startsWith('single_')) {
+        farePersonalSum += amt;
+        const targetId = payVal.replace('single_', '');
+        if (travelerPersonalAmounts[targetId] !== undefined) {
+          travelerPersonalAmounts[targetId] += amt;
+        } else {
+          travelerPersonalAmounts[travelers[0].id] += amt;
+        }
+      }
+    }
+
+    const fareTotalSum = fareCorpSum + farePersonalSum;
+    const totalFareRows = Math.max(rowCount, 1) + 2;
+
+    const viewFareTbody = document.getElementById('viewFareTbody');
+    let fareHTML = `
+      <tr>
+        <th rowspan="${totalFareRows}" class="col-title">운 임</th>
+        <th class="col-title">일 자</th>
+        <th class="col-title">교통편</th>
+        <th class="col-title">출발지</th>
+        <th class="col-title">도착지</th>
+        <th class="col-title">금 액</th>
+      </tr>
+    `;
+
+    if (rowCount > 0) {
+      for (let i = 0; i < rowCount; i++) {
+        const amt = parseInt(amounts[i].value) || 0;
+        const formattedDate = formatReportDate(dates[i].value);
+        fareHTML += `
+          <tr>
+            <td>${formattedDate}</td>
+            <td>${trans[i].value || '-'}</td>
+            <td>${origins[i].value || '-'}</td>
+            <td>${dests[i].value || '-'}</td>
+            <td class="text-right p-lr-6">${amt.toLocaleString()}원</td>
+          </tr>
+        `;
+      }
+    } else {
+      fareHTML += `
+        <tr>
+          <td>-</td>
+          <td>해당없음</td>
+          <td>-</td>
+          <td>-</td>
+          <td class="text-right p-lr-6">0원</td>
+        </tr>
       `;
-      viewFareTbody.appendChild(tr);
     }
 
-    if (rowCount === 0) {
-      viewFareTbody.innerHTML = `<tr><td>-</td><td>해당없음</td><td>-</td><td>-</td><td class="text-right p-lr-8">0원</td></tr>`;
-    }
+    fareHTML += `
+      <tr style="background-color: #fafafa; font-weight:bold;">
+        <th colspan="4" style="background-color: #eaeaea; text-align:center;">운임 합계</th>
+        <td class="text-right p-lr-6" id="viewFareSubtotal">${fareTotalSum.toLocaleString()}원</td>
+      </tr>
+    `;
+    viewFareTbody.innerHTML = fareHTML;
 
-    let corpSum = fareCorpSum;
-    let personalSum = mealTotal + dailyTotal + farePersonalSum;
-    if (lodgingTotal > 0) {
-      if (lodgingPayType === 'corp') corpSum += lodgingTotal;
-      else personalSum += lodgingTotal;
-    }
+    document.getElementById('fareInputTotalSummary').innerText = 
+      `총 ${fareTotalSum.toLocaleString()}원 (개인: ${farePersonalSum.toLocaleString()}원 / 법인카드: ${fareCorpSum.toLocaleString()}원)`;
+
+    // 전체 총계 산정
+    const corpSum = fareCorpSum + lodgingCorpSum;
+    const personalSum = mealTotal + dailyTotal + lodgingPersonalSum + farePersonalSum;
     const grandTotal = corpSum + personalSum;
 
-    document.getElementById('viewMealUnit').innerText = mealUnit.toLocaleString();
-    document.getElementById('viewMealDays').innerText = mealDays + "일";
-    document.getElementById('viewMealTotal').innerText = mealTotal.toLocaleString() + "원";
+    // 서식 값 반영 (식비 금액 하단 산정내역 주석 정밀 생성)
+    const mealDays = mealScheduleData.length;
+    document.getElementById('viewMealUnit').innerText = "25,000";
+    document.getElementById('viewMealDays').innerText = `${mealDays}일 (${mealRes.totalMeals}식)`;
+    document.getElementById('viewMealTotal').innerText = `${mealTotal.toLocaleString()}원`;
 
+    // 식비 하단 산정내역 문구
+    let mealCalcNote = "";
+    if (mealDays === 1) {
+      if (mealRes.totalMeals === 3) mealCalcNote = "(산정: 1일 3식 전액 25,000원)";
+      else if (mealRes.totalMeals === 2) mealCalcNote = "(산정: 25,000원 × 2식/3식 = 16,660원)";
+      else if (mealRes.totalMeals === 1) mealCalcNote = "(산정: 25,000원 × 1식/3식 = 8,330원)";
+      else mealCalcNote = "(산정: 0식 제공으로 식비 미청구)";
+    } else {
+      mealCalcNote = `(산정: 1인 ${mealRes.totalPerPerson.toLocaleString()}원 [${mealRes.breakdownArr.join(', ')}])`;
+    }
+    if (numTravelers > 1) {
+      mealCalcNote += ` × ${numTravelers}명`;
+    }
+    document.getElementById('viewMealSubNote').innerText = mealCalcNote;
+
+    // 일비 반영
+    const govCarUsed = document.getElementById('govCarUsed').checked;
     document.getElementById('viewDailyUnit').innerText = dailyUnit.toLocaleString();
-    document.getElementById('viewDailyDays').innerText = dailyDays + "일";
-    document.getElementById('viewDailyTotal').innerText = dailyTotal.toLocaleString() + "원";
+    document.getElementById('viewDailyDays').innerText = `${dailyDays}일${numTravelers > 1 ? ` (${numTravelers}명)` : ''}`;
+    document.getElementById('viewDailyTotal').innerText = `${dailyTotal.toLocaleString()}원`;
+    document.getElementById('viewDailySubNote').innerText = govCarUsed ? "(공용차량 이용 50% 감액)" : "";
 
-    document.getElementById('viewLodgingUnit').innerText = lodgingUnit.toLocaleString();
-    document.getElementById('viewLodgingDays').innerText = lodgingNights + "박";
-    document.getElementById('viewLodgingTotal').innerText = lodgingTotal.toLocaleString() + "원";
+    // 숙박비 반영 (별지 제3호 서식의 상한액/실제소요액 규격 반영)
+    const regionType = document.getElementById('regionType').value;
+    const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
+    let capPerPerson = (regionType === 'seoul' ? 100000 : (regionType === 'metro' ? 80000 : 70000));
+    if (lodgingExtra30) capPerPerson = Math.round(capPerPerson * 1.3);
+    const totalCap = capPerPerson * lodgingNights * numTravelers;
+
+    document.getElementById('viewLodgingCap').innerText = `${totalCap.toLocaleString()}원`;
+    document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
+    document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
+
+    const excessReason = document.getElementById('lodgingExcessReason').value.trim();
+    if (excessReason) {
+      document.getElementById('viewLodgingSubNote').innerText = `[초과사유] ${excessReason}`;
+    } else if (lodgingExtra30) {
+      document.getElementById('viewLodgingSubNote').innerText = "(부득이한 사유 30% 가산 적용)";
+    } else {
+      document.getElementById('viewLodgingSubNote').innerText = "";
+    }
 
     document.getElementById('viewCorpSum').innerText = corpSum.toLocaleString();
     document.getElementById('viewPersonalSum').innerText = personalSum.toLocaleString();
     document.getElementById('viewTotalSum').innerText = grandTotal.toLocaleString();
 
     document.getElementById('manualFinalClaim').value = personalSum;
-    applyFinalManualAdjustment();
+    renderPersonalDistribution(personalSum, travelerPersonalAmounts);
 
     updateReport();
     updateCarPreview();
   }
 
+  function renderPersonalDistribution(totalPersonal, travelerAmounts) {
+    const numTravelers = travelers.length;
+    const distEl = document.getElementById('viewPersonalDistribution');
+
+    if (numTravelers === 1) {
+      distEl.innerHTML = `금 ${totalPersonal.toLocaleString()} 원`;
+    } else {
+      let distHTML = `<div style="font-size:9.5pt; margin-bottom:2px; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px 12px;">`;
+      travelers.forEach(t => {
+        const amt = travelerAmounts[t.id] || 0;
+        distHTML += `<span><strong>${t.name}</strong> : ${amt.toLocaleString()}원</span>`;
+      });
+      distHTML += `</div><div style="font-size:8.5pt; color:#444;">(개인청구 합계: ${totalPersonal.toLocaleString()}원)</div>`;
+      distEl.innerHTML = distHTML;
+    }
+  }
+
   function applyFinalManualAdjustment() {
     const finalVal = parseInt(document.getElementById('manualFinalClaim').value) || 0;
     const reasonText = document.getElementById('manualReason').value.trim();
+    const numTravelers = travelers.length;
 
-    document.getElementById('viewFinalClaim').innerText = finalVal.toLocaleString();
+    const distEl = document.getElementById('viewPersonalDistribution');
+    if (numTravelers === 1) {
+      distEl.innerHTML = `금 ${finalVal.toLocaleString()} 원`;
+    } else {
+      const perCapita = Math.floor(finalVal / numTravelers);
+      const remainder = finalVal - (perCapita * numTravelers);
+      let distHTML = `<div style="font-size:9.5pt; margin-bottom:2px; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px 12px;">`;
+      travelers.forEach((t, i) => {
+        const amt = perCapita + (i === 0 ? remainder : 0);
+        distHTML += `<span><strong>${t.name}</strong> : ${amt.toLocaleString()}원</span>`;
+      });
+      distHTML += `</div><div style="font-size:8.5pt; color:#444;">(개인청구 합계: ${finalVal.toLocaleString()}원)</div>`;
+      distEl.innerHTML = distHTML;
+    }
+
     const reasonNoteEl = document.getElementById('viewReasonNote');
     if (reasonText) {
       reasonNoteEl.innerText = `[조정사유 및 산출근거] ${reasonText}`;
@@ -1708,118 +2063,121 @@
     }
   }
 
-  function adjustFontSize(element) {
-    if (!element) return;
-    const textLength = element.innerText.trim().length;
-    if (textLength >= 12) {
-      element.style.fontSize = "9px";
-    } else if (textLength >= 10) {
-      element.style.fontSize = "10px";
-    } else if (textLength >= 8) {
-      element.style.fontSize = "11px";
-    } else {
-      element.style.fontSize = "12px";
-    }
-  }
-
   function updateReport() {
-    const dept = document.getElementById('dept').value;
-    const pos = document.getElementById('position').value;
-    const name = document.getElementById('name').value;
+    const vDept = document.getElementById('viewDept');
+    const vPos = document.getElementById('viewPosition');
+    const vName = document.getElementById('viewName');
+
+    const uniqueDepts = [...new Set(travelers.map(t => t.dept))];
+    vDept.innerHTML = uniqueDepts.join('<br>');
+    vPos.innerHTML = travelers.map(t => t.pos || '-').join('<br>');
+    vName.innerHTML = travelers.map(t => t.name).join('<br>');
+
     const destLoc = document.getElementById('destLocation').value;
+    document.getElementById('viewDestLocation').innerText = destLoc;
+
     const sDate = document.getElementById('startDate').value;
     const sTime = document.getElementById('startTime').value;
     const eDate = document.getElementById('endDate').value;
     const eTime = document.getElementById('endTime').value;
-    const signDate = document.getElementById('signDate').value;
-
-    const vDept = document.getElementById('viewDept');
-    const vPos = document.getElementById('viewPosition');
-    vDept.innerText = dept;
-    vPos.innerText = pos;
-    document.getElementById('viewName').innerText = name;
-    document.getElementById('viewSignName').innerText = name;
-    document.getElementById('viewDestLocation').innerText = destLoc;
-
-    adjustFontSize(vDept);
-    adjustFontSize(vPos);
 
     if (sDate && eDate) {
       const s = sDate.split('-');
       const e = eDate.split('-');
-      const startTimeStr = sTime ? ` ${sTime}` : '';
-      const endTimeStr = eTime ? ` ${eTime}` : '';
       document.getElementById('viewPeriod').innerText =
-        `${s[0]}년 ${s[1]}월 ${s[2]}일${startTimeStr} ~ ${e[0]}년 ${e[1]}월 ${e[2]}일${endTimeStr}`;
+        `${s[0]}년 ${parseInt(s[1],10)}월 ${parseInt(s[2],10)}일 ${sTime} ~ ${e[0]}년 ${parseInt(e[1],10)}월 ${parseInt(e[2],10)}일 ${eTime}`;
     }
 
+    const signDate = document.getElementById('signDate').value;
     if (signDate) {
       const d = signDate.split('-');
-      document.getElementById('viewSignDate').innerText = `${d[0]}년 ${d[1]}월 ${d[2]}일`;
+      document.getElementById('viewSignDate').innerText = `${d[0]}년 ${parseInt(d[1],10)}월 ${parseInt(d[2],10)}일`;
+    }
+
+    const signContainer = document.getElementById('viewSignContainer');
+    signContainer.innerHTML = '';
+    travelers.forEach(t => {
+      const line = document.createElement('div');
+      line.innerHTML = `신청인 성명 : &nbsp;&nbsp;&nbsp;&nbsp;<strong>${t.name}</strong>&nbsp;&nbsp;&nbsp;&nbsp;(서명 또는 인)`;
+      signContainer.appendChild(line);
+    });
+
+    const excessReason = document.getElementById('lodgingExcessReason').value.trim();
+    const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
+    if (excessReason) {
+      document.getElementById('viewLodgingSubNote').innerText = `[초과사유] ${excessReason}`;
+    } else if (lodgingExtra30) {
+      document.getElementById('viewLodgingSubNote').innerText = "(부득이한 사유 30% 가산 적용)";
+    } else {
+      document.getElementById('viewLodgingSubNote').innerText = "";
     }
   }
 
   function copySummaryText() {
-    const dept = document.getElementById('dept').value;
-    const pos = document.getElementById('position').value;
-    const name = document.getElementById('name').value;
     const period = document.getElementById('viewPeriod').innerText;
     const dest = document.getElementById('destLocation').value;
-    const finalClaim = document.getElementById('viewFinalClaim').innerText;
-    const corpSum = document.getElementById('viewCorpSum').innerText;
     const totalSum = document.getElementById('viewTotalSum').innerText;
+    const corpSum = document.getElementById('viewCorpSum').innerText;
+    const personalSum = document.getElementById('viewPersonalSum').innerText;
     const reason = document.getElementById('manualReason').value.trim();
+    const travelerNames = travelers.map(t => `${t.name}${t.pos ? `(${t.pos})` : ''}`).join(', ');
 
-    const mealTotal = document.getElementById('viewMealTotal').innerText;
-    const dailyTotal = document.getElementById('viewDailyTotal').innerText;
-    const lodgingTotal = document.getElementById('viewLodgingTotal').innerText;
-
-    const summary = `[관외출장 여비 정산 신청 내역]
-• 소속/직급: ${dept} ${pos}
-• 성명: ${name}
+    const summary = `[국내여비 정산 신청 내역 - 별지 제3호 서식]
+• 출장자: ${travelerNames} (총 ${travelers.length}명)
 • 출장일시: ${period}
 • 출장지: ${dest}
-• 총 여비정산액: ${totalSum}원 (개인청구: ${finalClaim}원 / 법인카드: ${corpSum}원)
-  - 식비: ${mealTotal}
-  - 일비: ${dailyTotal}
-  - 숙박비: ${lodgingTotal}
-  - 산출근거: ${reason || '기준 정액 및 영수 실비 청구'}`;
+• 총 여비정산액: ${totalSum}원 (개인청구: ${personalSum}원 / 법인카드: ${corpSum}원)
+• 산출근거: ${reason || '기준 정액 및 영수 실비 청구'}`;
 
     navigator.clipboard.writeText(summary).then(() => {
-      alert("메신저용 요약 텍스트가 클립보드에 복사되었습니다.\n\n[Ctrl + V]로 붙여넣어 사용하세요.");
+      alert("메신저 보고용 요약 텍스트가 클립보드에 복사되었습니다.");
     }).catch(() => {
       alert("복사 권한 오류가 발생했습니다.");
     });
   }
 
   function saveUserDefault() {
-    const dept = document.getElementById('dept').value;
-    const pos = document.getElementById('position').value;
-    const name = document.getElementById('name').value;
-    localStorage.setItem('gov_travel_dept', dept);
-    localStorage.setItem('gov_travel_pos', pos);
-    localStorage.setItem('gov_travel_name', name);
-    alert(`[${name} ${pos}]님의 기본 인적사항이 브라우저에 저장되었습니다. 다음 접속 시 자동 반영됩니다.`);
+    if (travelers.length > 0) {
+      const t = travelers[0];
+      localStorage.setItem('gov_travel_dept', t.dept);
+      localStorage.setItem('gov_travel_pos', t.pos);
+      localStorage.setItem('gov_travel_name', t.name);
+      alert(`[${t.name}${t.pos ? ` ${t.pos}` : ''}]님의 인적사항이 기본값으로 저장되었습니다.`);
+    }
   }
 
   function loadUserDefault() {
     const dept = localStorage.getItem('gov_travel_dept');
     const pos = localStorage.getItem('gov_travel_pos');
     const name = localStorage.getItem('gov_travel_name');
-    if (dept) document.getElementById('dept').value = dept;
-    if (pos) document.getElementById('position').value = pos;
-    if (name) document.getElementById('name').value = name;
+    if (dept && travelers[0]) travelers[0].dept = dept;
+    if (pos !== null && travelers[0]) travelers[0].pos = pos;
+    if (name && travelers[0]) travelers[0].name = name;
   }
 
-  /* A4 1페이지 정밀 다운로드 */
+  /* PDF 다운로드 */
   function downloadPDF() {
-    const dept = document.getElementById('dept').value.trim() || "소속기관명";
-    const name = document.getElementById('name').value.trim() || "성명";
-    const fileName = `여비정산신청서(${dept} ${name}).pdf`;
+    const sDateVal = document.getElementById('startDate').value;
+    const eDateVal = document.getElementById('endDate').value;
+    const place = document.getElementById('destLocation').value.trim() || "출장지";
+
+    let fileName = "국내여비정산신청서.pdf";
+    if (sDateVal && eDateVal) {
+      const s = sDateVal.split('-');
+      const e = eDateVal.split('-');
+      const sYY = s[0].slice(2);
+      const sM = parseInt(s[1], 10);
+      const sD = parseInt(s[2], 10);
+      const eYY = e[0].slice(2);
+      const eM = parseInt(e[1], 10);
+      const eD = parseInt(e[2], 10);
+
+      fileName = `국내여비정산신청서(${sYY}.${sM}.${sD}.~${eYY}.${eM}.${eD}., ${place}).pdf`;
+    }
 
     const element = document.getElementById('pdf-container');
     const opt = {
-      margin: 0,
+      margin: [0, 0, 0, 0],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
@@ -1829,8 +2187,10 @@
   }
 
   window.onload = function() {
+    initDefaultDates();
     loadUserDefault();
-    applyManualAmounts();
+    renderTravelersUI();
+    checkFareEmptyNotice();
   };
 </script>
 </body>
