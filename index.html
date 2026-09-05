@@ -35,8 +35,16 @@
       --amber-text: #b45309;
       --amber-bg: #fffbeb;
     }
-    * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    * { 
+      box-sizing: border-box; 
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; 
+    }
     
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
     body {
       margin: 0;
       padding: 24px 20px 48px;
@@ -47,7 +55,7 @@
     }
     input, textarea, select { user-select: text !important; }
 
-    .container { max-width: 1650px; margin: 0 auto; }
+    .container { max-width: 1650px; margin: 0 auto; width: 100%; }
 
     /* 헤더 스타일 */
     .header {
@@ -78,6 +86,7 @@
       justify-content: center;
       font-size: 16px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      flex-shrink: 0;
     }
     h1 { margin: 0; font-size: 19px; color: var(--gov-slate); font-weight: 700; letter-spacing: -0.3px; }
     .version-badge {
@@ -88,6 +97,7 @@
       border-radius: 6px;
       font-size: 11px;
       font-weight: 700;
+      white-space: nowrap;
     }
     .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .feedback-btn {
@@ -169,6 +179,7 @@
       flex-direction: row;
       gap: 22px;
       align-items: flex-start;
+      width: 100%;
     }
 
     /* 좌측 컨트롤 패널 */
@@ -181,6 +192,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
       max-height: 92vh;
       overflow-y: auto;
+      min-width: 0;
     }
     .panel-header {
       font-size: 16px;
@@ -202,6 +214,7 @@
       border-radius: 8px;
       padding: 13px;
       margin-bottom: 14px;
+      min-width: 0;
     }
     .section-title {
       font-weight: 700;
@@ -211,11 +224,33 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 8px; }
-    .form-group { display: flex; flex-direction: column; }
-    .form-group label { font-size: 11.5px; font-weight: 600; margin-bottom: 4px; color: var(--gov-sub); }
+    /* 폼 그리드 및 유연한 인풋 */
+    .form-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+      gap: 9px; 
+      margin-bottom: 8px; 
+      min-width: 0;
+    }
+    .form-group { 
+      display: flex; 
+      flex-direction: column; 
+      min-width: 0;
+      width: 100%;
+    }
+    .form-group label { 
+      font-size: 11.5px; 
+      font-weight: 600; 
+      margin-bottom: 4px; 
+      color: var(--gov-sub); 
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .form-group input, .form-group select, .form-group textarea {
       padding: 6px 8px;
       border: 1px solid var(--border-dark);
@@ -224,12 +259,39 @@
       background-color: #fff;
       color: var(--gov-slate);
       outline: none;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(30,58,138,0.12);
     }
-    .inline-checkbox { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 5px; color: var(--gov-slate); }
+    .inline-checkbox { 
+      display: flex; 
+      align-items: center; 
+      gap: 6px; 
+      font-size: 12px; 
+      margin-top: 5px; 
+      color: var(--gov-slate); 
+      min-width: 0;
+    }
+
+    /* 인풋 + 버튼 복합 필드 */
+    .input-with-btn {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+      min-width: 0;
+    }
+    .input-with-btn input {
+      flex: 1;
+      min-width: 0;
+    }
+    .input-with-btn button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
 
     .btn {
       cursor: pointer;
@@ -242,6 +304,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      flex-shrink: 0;
     }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-primary:hover { background: #172554; }
@@ -252,13 +315,6 @@
     .btn-danger { background: #dc2626; color: #fff; }
     .btn-sm { padding: 4px 7px; font-size: 11px; }
 
-    /* 운임 테이블 */
-    .fare-table-wrap { width: 100%; overflow-x: auto; }
-    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; min-width: 480px; }
-    .fare-table th, .fare-table td { border: 1px solid var(--border-color); padding: 5px 4px; text-align: center; }
-    .fare-table th { background: var(--table-header); font-weight: 600; color: #334155; }
-    .fare-table input, .fare-table select { width: 100%; padding: 4px; font-size: 11.5px; border: 1px solid var(--border-dark); border-radius: 4px; }
-
     /* 자가용 계산기 박스 */
     .car-calc-box {
       background: #eff6ff;
@@ -266,6 +322,7 @@
       padding: 12px;
       border-radius: 8px;
       margin-top: 8px;
+      min-width: 0;
     }
     .fuel-standard-info {
       margin-top: 9px;
@@ -276,6 +333,7 @@
       font-size: 11px;
       color: #334155;
       line-height: 1.55;
+      word-break: keep-all;
     }
     .fuel-standard-info a {
       color: #1d4ed8;
@@ -283,13 +341,21 @@
       font-weight: 600;
     }
 
-    /* 우측 인쇄/PDF 미리보기 영역 (1페이지 최적화) */
+    /* 운임 테이블 - 데스크톱 기본 */
+    .fare-table-wrap { width: 100%; min-width: 0; }
+    .fare-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; }
+    .fare-table th, .fare-table td { border: 1px solid var(--border-color); padding: 5px 4px; text-align: center; }
+    .fare-table th { background: var(--table-header); font-weight: 600; color: #334155; }
+    .fare-table input, .fare-table select { width: 100%; padding: 5px 4px; font-size: 11.5px; border: 1px solid var(--border-dark); border-radius: 4px; box-sizing: border-box; }
+
+    /* 우측 인쇄/PDF 미리보기 영역 */
     .preview-panel {
       flex: 1.15;
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
+      min-width: 0;
     }
     .action-bar {
       width: 100%;
@@ -411,6 +477,7 @@
       border-radius: 12px;
       padding: 18px 20px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      width: 100%;
     }
     .family-sites-title {
       font-size: 14px;
@@ -423,7 +490,7 @@
     }
     .family-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 12px;
     }
     .family-item {
@@ -501,16 +568,17 @@
       color: #64748b;
     }
 
-    /* 모바일 반응형 스타일 (1024px 이하) */
-    @media screen and (max-width: 1024px) {
-      body { padding: 12px 10px 32px; }
-      .header { padding: 14px 16px; }
+    /* ==========================================================================
+       ★ 모바일 반응형 전용 정밀 스타일 (화면 폭 768px 이하)
+       ========================================================================== */
+    @media screen and (max-width: 768px) {
+      body { padding: 10px 8px 36px; }
+      .header { padding: 14px; }
       .header-top { flex-direction: column; align-items: flex-start; gap: 8px; }
       .header-right { width: 100%; justify-content: flex-start; }
       
-      /* 모바일 전용 탭 활성화 */
       .mobile-tab-bar { display: flex; }
-      .app-main { flex-direction: column; gap: 14px; }
+      .app-main { flex-direction: column; gap: 12px; }
       .input-panel, .preview-panel {
         width: 100%;
         max-width: 100%;
@@ -519,11 +587,75 @@
       .input-panel {
         max-height: none;
         overflow-y: visible;
-        padding: 15px;
+        padding: 13px;
       }
-      .form-grid { grid-template-columns: repeat(2, 1fr); }
-      .preview-panel { display: none; } /* 기본적으로 입력 패널 우선 */
+      .preview-panel { display: none; }
       .action-bar { justify-content: center; }
+
+      /* 1. 입력창 삐져나옴 완벽 해결 (모바일 1열화 및 안전 폭 보장) */
+      .form-grid {
+        grid-template-columns: 1fr !important; /* 모바일에서 1열로 시원하게 배치 */
+        gap: 8px;
+      }
+      .form-grid.mobile-col-2 {
+        grid-template-columns: 1fr 1fr !important; /* 시작일시, 종료일시 등 간단한 2개만 2열 */
+      }
+      .form-group {
+        grid-column: span 1 !important;
+      }
+
+      /* 2. 운임 내역 테이블 -> 모바일 전용 반응형 카드(Card) UI로 전면 개편 */
+      .fare-table-wrap {
+        overflow-x: visible; /* 가로스크롤 완전 제거 */
+      }
+      .fare-table, .fare-table tbody {
+        display: block;
+        width: 100%;
+      }
+      .fare-table thead {
+        display: none; /* 표 헤더 숨김 */
+      }
+      .fare-table tbody tr {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr auto;
+        gap: 6px 7px;
+        background: #ffffff;
+        border: 1px solid var(--border-dark);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        align-items: center;
+      }
+      .fare-table td {
+        border: none !important;
+        padding: 0 !important;
+        text-align: left !important;
+        display: block;
+        width: 100%;
+      }
+      /* 각 TD의 모바일 카드 내 배치 */
+      .fare-table td:nth-child(1) { grid-column: 1 / 2; } /* 일자 */
+      .fare-table td:nth-child(2) { grid-column: 2 / 3; } /* 교통편 */
+      .fare-table td:nth-child(7) { grid-column: 3 / 4; grid-row: 1 / 2; } /* 삭제 버튼 */
+      .fare-table td:nth-child(3) { grid-column: 1 / 2; } /* 출발지 */
+      .fare-table td:nth-child(4) { grid-column: 2 / 4; } /* 도착지 */
+      .fare-table td:nth-child(5) { grid-column: 1 / 2; } /* 결제구분 */
+      .fare-table td:nth-child(6) { grid-column: 2 / 4; } /* 금액 */
+
+      .fare-table td input, .fare-table td select {
+        padding: 7px 8px;
+        font-size: 12.5px;
+      }
+      .fare-table td .btn-danger {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+      }
     }
 
     @media print {
@@ -544,7 +676,7 @@
       <div class="title-area">
         <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
         <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
-        <span class="version-badge">20260905 0920</span>
+        <span class="version-badge">20260905 Pro</span>
       </div>
       <div class="header-right">
         <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
@@ -553,15 +685,15 @@
         </a>
         <div class="security-tag">
           <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-          <span>100% 브라우저 로컬 분석 (외부 유출 안심)</span>
+          <span>100% 로컬 분석</span>
         </div>
       </div>
     </div>
-    <p class="subtitle">인사혁신처 공무원 여비업무 처리기준에 근거하여 식비·일비·숙박비·운임을 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다.</p>
+    <p class="subtitle">인사혁신처 공무원 여비업무 처리기준에 근거하여 식비·일비·숙박비·운임을 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다[cite: 1].</p>
     
     <div class="guide-box">
       <strong>출장 정산 기준 및 법적 근거 안내:</strong><br>
-      해당 계산은 <strong>「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.)</strong> 기준에 따라 산정됩니다. 식비·일비 1일 25,000원 정액(관용차 50% 감액) 및 숙박비 실비 상한(서울 10만, 광역시 8만, 기타 7만 원)을 적용하며, 실무상 필요 시 개별 항목 및 <strong>최종 청구액 수기 조정</strong>이 가능합니다.
+      해당 계산은 <strong>「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.)</strong> 기준에 따라 산정됩니다[cite: 1]. 식비·일비 1일 25,000원 정액(관용차 50% 감액) 및 숙박비 실비 상한(서울 10만, 광역시 8만, 기타 7만 원)을 적용하며, 실무상 필요 시 개별 항목 및 <strong>최종 청구액 수기 조정</strong>이 가능합니다.
     </div>
   </div>
 
@@ -593,7 +725,7 @@
       <!-- 인적사항 -->
       <div class="section-box">
         <div class="section-title">출장자 기본 인적사항</div>
-        <div class="form-grid">
+        <div class="form-grid mobile-col-2">
           <div class="form-group">
             <label>소속 기관명</label>
             <input type="text" id="dept" value="부산광역시교육청" oninput="updateReport()">
@@ -619,7 +751,7 @@
       <!-- 출장 일정 및 시간 -->
       <div class="section-box">
         <div class="section-title">출장 일정 및 시간 (식비 산정 기준)</div>
-        <div class="form-grid">
+        <div class="form-grid mobile-col-2">
           <div class="form-group">
             <label>출장 시작일</label>
             <input type="date" id="startDate" value="2026-09-04" onchange="handleDateChange()">
@@ -638,11 +770,11 @@
           </div>
         </div>
         <div class="form-grid" style="margin-top:6px;">
-          <div class="form-group" style="grid-column: span 2;">
+          <div class="form-group">
             <label>출장(부임)지</label>
             <input type="text" id="destLocation" value="서울특별시" oninput="updateReport()">
           </div>
-          <div class="form-group" style="grid-column: span 2;">
+          <div class="form-group">
             <label>지역구분 (숙박 상한액)</label>
             <select id="regionType" onchange="calcAll()">
               <option value="seoul" selected>서울특별시 (상한 100,000원)</option>
@@ -653,7 +785,7 @@
         </div>
         <div class="inline-checkbox">
           <input type="checkbox" id="govCarUsed" onchange="calcAll()">
-          <label for="govCarUsed">공무용 차량(또는 임차차량) 이용 (일비 50% 감액 적용)</label>
+          <label for="govCarUsed">공무용 차량 이용 (일비 50% 감액)</label>
         </div>
       </div>
 
@@ -661,7 +793,7 @@
       <div class="section-box">
         <div class="section-title">
           <span>식비 / 일비 / 숙박비 산정</span>
-          <span style="font-size:11px; color:#dc2626;">* 필요 시 금액 직접 수정 가능</span>
+          <span style="font-size:11px; color:#dc2626;">* 필요 시 직접 수정 가능</span>
         </div>
         <div class="form-grid">
           <div class="form-group">
@@ -678,7 +810,7 @@
           </div>
         </div>
 
-        <div class="form-grid" style="margin-top:5px;">
+        <div class="form-grid" style="margin-top:6px;">
           <div class="form-group">
             <label>일비 일수</label>
             <input type="number" id="dailyDays" min="0" value="2" oninput="calcAll()">
@@ -693,7 +825,7 @@
           </div>
         </div>
 
-        <div class="form-grid" style="margin-top:5px;">
+        <div class="form-grid" style="margin-top:6px;">
           <div class="form-group">
             <label>숙박 일수(박)</label>
             <input type="number" id="lodgingNights" min="0" value="1" oninput="calcAll()">
@@ -703,31 +835,31 @@
             <input type="number" id="lodgingExpense" value="150000" step="1000" oninput="calcAll()">
           </div>
           <div class="form-group">
-            <label>숙박비 최종 인정액(원)</label>
+            <label>숙박비 인정액(원)</label>
             <input type="number" id="customLodgingTotal" value="100000" step="1000" oninput="applyManualAmounts()">
           </div>
         </div>
 
-        <div class="form-grid" style="margin-top:6px;">
+        <div class="form-grid mobile-col-2" style="margin-top:6px;">
           <div class="form-group">
             <label>숙박 유형</label>
             <select id="lodgingType" onchange="calcAll()">
-              <option value="normal" selected>일반 숙박 (상한 내 실비정산)</option>
-              <option value="relative">친지 집 숙박 (1박 20,000원)</option>
+              <option value="normal" selected>일반 숙박 (상한 내 실비)</option>
+              <option value="relative">친지 집 (1박 2만)</option>
               <option value="none">숙박 안함 (0원)</option>
             </select>
           </div>
           <div class="form-group">
             <label>숙박 결제 수단</label>
             <select id="lodgingPayType" onchange="calcAll()">
-              <option value="personal" selected>개인카드 / 현금 (개인청구)</option>
-              <option value="corp">법인(정부구매)카드</option>
+              <option value="personal" selected>개인청구</option>
+              <option value="corp">법인카드</option>
             </select>
           </div>
         </div>
         <div class="inline-checkbox">
           <input type="checkbox" id="lodgingExtra30" onchange="calcAll()">
-          <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가지급 인정 (서울: 130,000원 상한)</label>
+          <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가인정</label>
         </div>
       </div>
 
@@ -753,21 +885,21 @@
           <div class="form-grid">
             <div class="form-group">
               <label>출발지</label>
-              <div style="display:flex; gap:3px;">
+              <div class="input-with-btn">
                 <input type="text" id="carOrigin" value="부산광역시교육청">
                 <button class="btn btn-secondary btn-sm" onclick="openSearchModal('carOrigin')">검색</button>
               </div>
             </div>
             <div class="form-group">
               <label>도착지</label>
-              <div style="display:flex; gap:3px;">
+              <div class="input-with-btn">
                 <input type="text" id="carDest" value="코엑스">
                 <button class="btn btn-secondary btn-sm" onclick="openSearchModal('carDest')">검색</button>
               </div>
             </div>
             <div class="form-group">
               <label>경로 거리 (왕복 km)</label>
-              <div style="display:flex; gap:3px;">
+              <div class="input-with-btn">
                 <input type="number" id="carDistance" value="804" step="0.1">
                 <button class="btn btn-success btn-sm" onclick="fetchKakaoNaviRoute()">경로계산</button>
               </div>
@@ -789,7 +921,7 @@
             </div>
             <div class="form-group">
               <label>유가 (원/L 또는 단위)</label>
-              <div style="display:flex; gap:3px;">
+              <div class="input-with-btn">
                 <input type="number" id="fuelPrice" value="1685">
                 <button class="btn btn-secondary btn-sm" onclick="fetchOpinetPrice()">오피넷</button>
               </div>
@@ -800,12 +932,12 @@
             </div>
           </div>
 
-          <!-- 유가 고시 기준 안내 박스 (요구사항 2 반영) -->
+          <!-- 유가 고시 기준 안내 박스 -->
           <div class="fuel-standard-info">
             <div><i class="fa-solid fa-circle-info text-blue-600"></i> <strong>유가 및 충전단가 적용 기준 안내</strong></div>
-            <div>• <strong>휘발유·경유·LPG</strong>: <strong>출장 시작일 기준</strong> <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">한국석유공사 유가정보서비스(오피넷)</a>에 고시된 전국 평균 유가를 적용합니다.</div>
-            <div>• <strong>전기차</strong>: <a href="https://ev.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 무공해차 통합누리집</a> 충전요금을 참고하시기 바랍니다.</div>
-            <div>• <strong>수소차</strong>: <a href="https://www.h2nbiz.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 수소유통정보시스템</a> 고시 충전가격을 참고하시기 바랍니다.</div>
+            <div>• <strong>휘발유·경유·LPG</strong>: <strong>출장 시작일 기준</strong> <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">한국석유공사 유가정보서비스(오피넷)</a> 고시 전국 평균가[cite: 1]</div>
+            <div>• <strong>전기차</strong>: <a href="https://ev.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 무공해차 통합누리집</a> 충전요금 참고</div>
+            <div>• <strong>수소차</strong>: <a href="https://www.h2nbiz.or.kr/" target="_blank" rel="noopener noreferrer">기후에너지환경부 수소유통정보시스템</a> 고시 충전가격 참고</div>
           </div>
 
           <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
@@ -816,6 +948,7 @@
           </div>
         </div>
 
+        <!-- 운임 입력 영역 (모바일: 카드형 레이아웃 / PC: 표) -->
         <div class="fare-table-wrap">
           <table class="fare-table" id="fareInputTable">
             <thead>
@@ -832,31 +965,31 @@
             <tbody id="fareTbody">
               <tr>
                 <td><input type="date" value="2026-09-04" class="f-date" onchange="calcAll()"></td>
-                <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
-                <td><input type="text" value="부산(교육청)" class="f-origin" oninput="calcAll()"></td>
-                <td><input type="text" value="서울(코엑스)" class="f-dest" oninput="calcAll()"></td>
+                <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
+                <td><input type="text" value="부산(교육청)" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
+                <td><input type="text" value="서울(코엑스)" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
                 <td>
                   <select class="f-pay" onchange="calcAll()">
                     <option value="personal" selected>개인</option>
                     <option value="corp">법인카드</option>
                   </select>
                 </td>
-                <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
-                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+                <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
               </tr>
               <tr>
                 <td><input type="date" value="2026-09-05" class="f-date" onchange="calcAll()"></td>
-                <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
-                <td><input type="text" value="서울(코엑스)" class="f-origin" oninput="calcAll()"></td>
-                <td><input type="text" value="부산(교육청)" class="f-dest" oninput="calcAll()"></td>
+                <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
+                <td><input type="text" value="서울(코엑스)" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
+                <td><input type="text" value="부산(교육청)" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
                 <td>
                   <select class="f-pay" onchange="calcAll()">
                     <option value="personal" selected>개인</option>
                     <option value="corp">법인카드</option>
                   </select>
                 </td>
-                <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
-                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+                <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
               </tr>
             </tbody>
           </table>
@@ -869,13 +1002,13 @@
           <span><i class="fa-solid fa-pen-to-square mr-1"></i> 최종 여비지급액(개인청구액) 직접 조정</span>
         </div>
         <div class="form-grid">
-          <div class="form-group" style="grid-column: span 2;">
+          <div class="form-group">
             <label style="color:#854d0e;">최종 개인청구 지급액 수기 수정(원)</label>
             <input type="number" id="manualFinalClaim" value="319600" step="100" oninput="applyFinalManualAdjustment()">
           </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 표 하단 반영)</label>
-            <input type="text" id="manualReason" value="(예시) 기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)" placeholder="예: 숙박비 상한액 준수, 운임 실비 반영 등" oninput="applyFinalManualAdjustment()">
+          <div class="form-group">
+            <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 표 반영)</label>
+            <input type="text" id="manualReason" value="기준 산정액 전액 청구 (숙박비 상한 적용 및 KTX 실비 영수)" placeholder="예: 숙박비 상한액 준수, 운임 실비 반영 등" oninput="applyFinalManualAdjustment()">
           </div>
         </div>
       </div>
@@ -902,7 +1035,7 @@
       <div class="pdf-scroll-wrapper">
         <div id="pdf-container">
           <div>
-            <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식]</div>
+            <div class="doc-header-tag">공무원보수 등의 업무지침 제9장 [별지 제3호 서식][cite: 1]</div>
             <div class="doc-title">국내여비 정산 신청서</div>
 
             <table class="report-table">
@@ -1011,10 +1144,10 @@
             <!-- 규정 문구 및 서명란 -->
             <div class="statement-box">
               <div class="rule-text">
-                「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다.
+                「공무원 여비 규정」 제16조 제1항·제2항에 의하여 관계서류를 첨부하여 위와 같이 여비의 정산을 신청합니다[cite: 1].
               </div>
               <div class="attach-text">
-                첨부 : 신용카드 매출전표 등 1부
+                첨부 : 신용카드 매출전표 등 1부[cite: 1]
               </div>
               <div class="sign-date" id="viewSignDate">
                 2026년 09월 04일
@@ -1027,14 +1160,14 @@
 
           <!-- 예규 기준 안내 각주 -->
           <div class="doc-footer-legal">
-            ※ 본 계산은 「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.) 기준에 따라 산정되었습니다.
+            ※ 본 계산은 「공무원보수 등의 업무지침」(인사혁신처예규 제220호, 2026. 7. 31.) 기준에 따라 산정되었습니다[cite: 1].
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 자매 사이트 및 유관 프로그램 안내 영역 (요구사항 3 반영) -->
+  <!-- 자매 사이트 및 유관 프로그램 안내 영역 -->
   <div class="family-sites-card">
     <div class="family-sites-title">
       <i class="fa-solid fa-shapes text-blue-600"></i> 업무 지원 자매 서비스 및 유관 프로그램
@@ -1092,7 +1225,7 @@
       Designed & Developed by 윤상 &copy; 2026. All Rights Reserved.
     </p>
     <p style="margin: 0; color: #94a3b8;">
-      본 프로그램은 교육행정 업무 효율화를 위해 자체 개발된 분석 도구입니다. &nbsp;|&nbsp; 문의: <a href="mailto:hola3927@korea.kr" style="color: #2563eb; font-weight: 600; text-decoration: none;">hola3927@korea.kr</a>
+      본 프로그램은 교육행정 업무 효율화를 위해 자체 개발된 분석 도구입니다. &nbsp;|&nbsp; 문의: <a href="mailto:hola3927@korea.kr" style="color: #2563eb; font-weight: 600; text-decoration: none;">hola3927@korea.kr</a>[cite: 1, 2]
     </p>
   </div>
 </div>
@@ -1164,7 +1297,7 @@
   window.addEventListener('resize', function() {
     const inputPanel = document.getElementById('inputPanel');
     const previewPanel = document.getElementById('previewPanel');
-    if (window.innerWidth > 1024) {
+    if (window.innerWidth > 768) {
       inputPanel.style.display = 'block';
       previewPanel.style.display = 'flex';
     } else {
@@ -1309,17 +1442,17 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
-      <td><input type="text" value="자가용(연료/통행)" class="f-trans" oninput="calcAll()"></td>
-      <td><input type="text" value="${origin}" class="f-origin" oninput="calcAll()"></td>
-      <td><input type="text" value="${dest}" class="f-dest" oninput="calcAll()"></td>
+      <td><input type="text" value="자가용(연료/통행)" class="f-trans" placeholder="교통편 (예: 자가용)" oninput="calcAll()"></td>
+      <td><input type="text" value="${origin}" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
+      <td><input type="text" value="${dest}" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
       <td>
         <select class="f-pay" onchange="calcAll()">
           <option value="personal" selected>개인</option>
           <option value="corp">법인카드</option>
         </select>
       </td>
-      <td><input type="number" value="${total}" class="f-amount" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+      <td><input type="number" value="${total}" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
     calcAll();
@@ -1374,17 +1507,17 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="date" value="${sDate}" class="f-date" onchange="calcAll()"></td>
-      <td><input type="text" value="KTX(일반실)" class="f-trans" oninput="calcAll()"></td>
-      <td><input type="text" value="부산" class="f-origin" oninput="calcAll()"></td>
-      <td><input type="text" value="서울" class="f-dest" oninput="calcAll()"></td>
+      <td><input type="text" value="KTX(일반실)" class="f-trans" placeholder="교통편 (예: KTX)" oninput="calcAll()"></td>
+      <td><input type="text" value="부산" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
+      <td><input type="text" value="서울" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
       <td>
         <select class="f-pay" onchange="calcAll()">
           <option value="personal" selected>개인</option>
           <option value="corp">법인카드</option>
         </select>
       </td>
-      <td><input type="number" value="59800" class="f-amount" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+      <td><input type="number" value="59800" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
     calcAll();
@@ -1414,17 +1547,17 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="date" value="${eDate}" class="f-date" onchange="calcAll()"></td>
-      <td><input type="text" value="${firstTrans}" class="f-trans" oninput="calcAll()"></td>
-      <td><input type="text" value="${firstDest}" class="f-origin" oninput="calcAll()"></td>
-      <td><input type="text" value="${firstOrigin}" class="f-dest" oninput="calcAll()"></td>
+      <td><input type="text" value="${firstTrans}" class="f-trans" placeholder="교통편" oninput="calcAll()"></td>
+      <td><input type="text" value="${firstDest}" class="f-origin" placeholder="출발지" oninput="calcAll()"></td>
+      <td><input type="text" value="${firstOrigin}" class="f-dest" placeholder="도착지" oninput="calcAll()"></td>
       <td>
         <select class="f-pay" onchange="calcAll()">
           <option value="personal" ${firstPay === 'personal' ? 'selected' : ''}>개인</option>
           <option value="corp" ${firstPay === 'corp' ? 'selected' : ''}>법인카드</option>
         </select>
       </td>
-      <td><input type="number" value="${firstAmount}" class="f-amount" oninput="calcAll()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)">X</button></td>
+      <td><input type="number" value="${firstAmount}" class="f-amount" placeholder="금액(원)" oninput="calcAll()"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeFareRow(this)" title="항목 삭제"><i class="fa-solid fa-xmark"></i></button></td>
     `;
     tbody.appendChild(row);
     calcAll();
@@ -1554,7 +1687,6 @@
     document.getElementById('viewPersonalSum').innerText = personalSum.toLocaleString();
     document.getElementById('viewTotalSum').innerText = grandTotal.toLocaleString();
 
-    // 최종 개인 청구액 기본값 동기화
     document.getElementById('manualFinalClaim').value = personalSum;
     applyFinalManualAdjustment();
 
