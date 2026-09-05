@@ -589,13 +589,69 @@
     .modal-item-name { font-weight: 600; font-size: 13px; color: var(--primary); }
     .modal-item-addr { font-size: 11.5px; color: #64748b; margin-top: 2px; }
 
+    /* 하단 푸터 및 제작 프로그램 바로가기 링크 스타일 */
     .footer {
-      padding: 24px 0 10px;
+      padding: 24px 0 12px;
       border-top: 1px solid var(--border-color);
       margin-top: 24px;
       text-align: center;
       font-size: 11.5px;
       color: #64748b;
+    }
+    .related-apps-box {
+      background: #ffffff;
+      border: 1px solid var(--border-dark);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 0 auto 16px;
+      max-width: 960px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .related-apps-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gov-slate);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .related-apps-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .app-link-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .app-link-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: #172554;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(30,58,138,0.1);
+    }
+    .app-link-chip.current {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #334155;
     }
 
     @media screen and (max-width: 768px) {
@@ -614,6 +670,8 @@
       .form-grid { grid-template-columns: 1fr !important; gap: 8px; }
       .form-grid.mobile-col-2 { grid-template-columns: 1fr 1fr !important; }
       .form-group { grid-column: span 1 !important; }
+      
+      .app-link-chip { width: 100%; justify-content: center; font-size: 11.5px; }
     }
 
     @media print {
@@ -638,7 +696,7 @@
       <div class="title-area">
         <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
         <h1>공무원 여비 정산 프로그램 (근무지외 국내출장)</h1>
-        <span class="version-badge">20260905 Ver</span>
+        <span class="version-badge">20260905 Ver (규정 보완판)</span>
       </div>
       <div class="header-right">
         <a href="mailto:hola3927@korea.kr" class="feedback-btn" title="오류 제보 및 기능 제안">
@@ -670,7 +728,6 @@
       <div class="panel-header">
         <span><i class="fa-solid fa-sliders mr-1"></i> 여비 정산 입력기</span>
         <div style="display:flex; gap:6px;">
-          <!-- 중복 버튼 제거 후 '정산내용 복사'만 깔끔하게 유지 -->
           <button class="btn btn-secondary btn-sm" onclick="copySummaryText()" title="메신저 보고용 요약 텍스트 복사">
             <i class="fa-regular fa-copy"></i> 정산내용 복사
           </button>
@@ -718,7 +775,7 @@
             <input type="text" id="destLocation" value="서울특별시" oninput="updateReport()">
           </div>
           <div class="form-group">
-            <label>지역구분 (숙박 상한액)</label>
+            <label>지역구분 (숙박 상한액 - 제2호 기준)</label>
             <select id="regionType" onchange="calcAll()">
               <option value="seoul" selected>서울특별시 (상한 100,000원)</option>
               <option value="metro">광역시 (상한 80,000원)</option>
@@ -742,7 +799,10 @@
 
         <div class="inline-checkbox">
           <input type="checkbox" id="govCarUsed" onchange="calcAll()">
-          <label for="govCarUsed">공무용 차량 이용 (일비 50% 감액)</label>
+          <label for="govCarUsed" style="cursor: pointer;">
+            공무용 차량 이용 (일비 50% 감액)
+            <span style="font-size:11px; color:#64748b; font-weight:normal; margin-left:4px;">※ 관용차·임차차량 이용 시 체크 (자가용 출장은 체크 해제)</span>
+          </label>
         </div>
       </div>
 
@@ -848,7 +908,7 @@
         </div>
         <div class="inline-checkbox">
           <input type="checkbox" id="lodgingExtra30" onchange="calcAll()">
-          <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가인정</label>
+          <label for="lodgingExtra30">부득이한 사유로 숙박비 30% 범위 내 추가인정 (영 제16조 제1항 단서)</label>
         </div>
         <div class="form-group" style="margin-top:6px;">
           <label>숙박비 초과지출 사유 (별지 서식 표기용)</label>
@@ -923,6 +983,7 @@
             <div><i class="fa-solid fa-circle-info text-blue-600"></i> <strong>유가 및 충전단가 적용 기준 안내</strong></div>
             <div>• <strong>휘발유·경유·LPG</strong>: <a href="https://www.opinet.co.kr" target="_blank" rel="noopener noreferrer">오피넷</a> 출장 시작일 전국 평균가</div>
             <div>• <strong>전기·수소차</strong>: 무공해차 통합누리집 및 수소유통정보시스템 고시 충전가격 참고</div>
+            <div style="color:#b91c1c; margin-top:2px;">• <strong>유의사항</strong>: 자가용 운임(연료비+통행료)은 차량 소유자 1인에게만 지급되며, 동승자에게는 지급되지 않습니다.</div>
           </div>
 
           <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
@@ -945,7 +1006,7 @@
             <thead>
               <tr>
                 <th width="15%">일자</th>
-                <th width="15%">교통편</th>
+                <th width="15%">교통편(등급)</th>
                 <th width="17%">출발지</th>
                 <th width="17%">도착지</th>
                 <th width="18%">결제자 (출장자별)</th>
@@ -1008,7 +1069,6 @@
     <!-- 우측 표준 정산서 미리보기 패널 -->
     <div class="preview-panel" id="previewPanel">
       <div class="action-bar">
-        <!-- '정산서 인쇄' 버튼을 엑셀 그린 대신 메인 네이비(btn-primary)로 변경 -->
         <button class="btn btn-primary" onclick="window.print()" title="브라우저 인쇄 창에서 PDF로 저장하거나 바로 인쇄">
           <i class="fa-solid fa-print"></i> 정산서 인쇄
         </button>
@@ -1052,7 +1112,6 @@
                   <th class="col-title">출장(부임)지</th>
                   <td colspan="4" class="text-left p-lr-6" id="viewDestLocation">서울특별시</td>
                 </tr>
-                <!-- 선택 시 동적으로 나타나는 출장목적 행 -->
                 <tr id="viewDestPurposeRow" style="display:none;">
                   <th class="col-title">출장목적</th>
                   <td colspan="4" class="text-left p-lr-6" id="viewDestPurpose"></td>
@@ -1061,7 +1120,6 @@
 
               <!-- 2. 식비 / 일비 / 숙박비 -->
               <tbody>
-                <!-- 식비 기본 행 -->
                 <tr>
                   <th rowspan="2" class="col-title">식 비</th>
                   <th class="col-title">단 가</th>
@@ -1070,13 +1128,11 @@
                   <td id="viewMealDays">2일</td>
                   <td class="text-right p-lr-6" id="viewMealTotal" style="font-weight:bold;">50,000원</td>
                 </tr>
-                <!-- 식비 산정근거 전용 추가 행 -->
                 <tr id="viewMealSubRow">
                   <th class="col-title">산정근거</th>
                   <td colspan="4" class="text-left p-lr-6" id="viewMealSubNote" style="font-size: 8pt; line-height: 1.35; padding: 4px 6px;"></td>
                 </tr>
 
-                <!-- 일비 -->
                 <tr>
                   <th class="col-title">일 비</th>
                   <th class="col-title">단 가</th>
@@ -1089,7 +1145,6 @@
                   </td>
                 </tr>
 
-                <!-- 숙박비 -->
                 <tr>
                   <th class="col-title">숙 박 비</th>
                   <th class="col-title">상한액</th>
@@ -1160,7 +1215,25 @@
     </div>
   </div>
 
+  <!-- 하단 정보 및 자체 개발 프로그램 바로가기 -->
   <div class="footer">
+    <div class="related-apps-box">
+      <div class="related-apps-title">
+        <i class="fa-solid fa-layer-group text-blue-600"></i> 자체 개발 교육행정 업무 지원 프로그램 바로가기
+      </div>
+      <div class="related-apps-list">
+        <a href="https://hola3927.github.io/travel_expense/" target="_blank" rel="noopener noreferrer" class="app-link-chip current" title="근무지외 국내출장 여비 정산 (현재 도구)">
+          <i class="fa-solid fa-plane-departure"></i> 근무지외 국내출장 여비 정산
+        </a>
+        <a href="https://hola3927.github.io/budget-dashboard/" target="_blank" rel="noopener noreferrer" class="app-link-chip" title="부산광역시교육청 교육비특별회계 K-에듀파인 예산현액 엑셀파일 일괄 분석">
+          <i class="fa-solid fa-chart-pie"></i> K-에듀파인 예산현액 일괄 분석
+        </a>
+        <a href="https://hola3927.github.io/budget-log-102a/" target="_blank" rel="noopener noreferrer" class="app-link-chip" title="부산광역시교육청 교육비특별회계 집행실적(102-A 장부) 분석 프로그램">
+          <i class="fa-solid fa-book-bookmark"></i> 집행실적(102-A 장부) 분석
+        </a>
+      </div>
+    </div>
+
     <p style="margin: 0 0 4px 0; font-weight: 700; color: #334155;">
       Designed & Developed by 윤상 &copy; 2026. All Rights Reserved.
     </p>
@@ -1222,7 +1295,7 @@
 
   let mealScheduleData = [];
 
-  /* 첨부서류 목록 데이터 (기본값: 신용카드 매출전표 등 1부) */
+  /* 첨부서류 목록 데이터 */
   let attachments = [
     { name: "신용카드 매출전표 등", count: 1 }
   ];
@@ -1257,8 +1330,8 @@
           <div class="form-group">
             <label>여비 지급구분</label>
             <select id="t_grade_${idx}" onchange="updateTravelerData(${idx}, 'grade', this.value)">
-              <option value="2" ${t.grade === "2" ? "selected" : ""}>제2호 (일반)</option>
-              <option value="1" ${t.grade === "1" ? "selected" : ""}>제1호 (임원/연구관급)</option>
+              <option value="2" ${t.grade === "2" ? "selected" : ""}>제2호 (일반공무원)</option>
+              <option value="1" ${t.grade === "1" ? "selected" : ""}>제1호 (교장/국장/연구관급 - 숙박 실비)</option>
             </select>
           </div>
         </div>
@@ -1311,6 +1384,9 @@
     if (field === 'name') {
       refreshPaymentSelectOptions();
       renderIndividualMealList();
+    }
+    if (field === 'grade') {
+      calcAll();
     }
     updateReport();
   }
@@ -1883,6 +1959,7 @@
     return total;
   }
 
+  /* 규정 반영: 자가용 운임은 차량 소유자(1인)에게만 지급 (동승자 분할 불가) */
   function applyCarFare() {
     const total = updateCarPreview();
     const origin = document.getElementById('carOrigin').value;
@@ -1902,9 +1979,16 @@
     `;
     tbody.appendChild(row);
     refreshPaymentSelectOptions();
+    
+    // 자가용 운임은 기본적으로 차량 소유자 1인 전액 지급으로 자동 선택
+    const newPaySelect = row.querySelector('.f-pay');
+    if (newPaySelect && travelers.length > 0) {
+      newPaySelect.value = `single_${travelers[0].id}`;
+    }
+
     checkFareEmptyNotice();
     calcAll();
-    alert(`자가용 운임 ${total.toLocaleString()}원이 운임표에 반영되었습니다.`);
+    alert(`자가용 운임 ${total.toLocaleString()}원이 운임표에 반영되었습니다.\n(※ 공무원 여비업무 처리기준에 따라 자가용 운임은 차량을 제공한 1인에게만 지급되며, 동승자는 운임 지급 대상에서 제외됩니다.)`);
   }
 
   function handleFuelChange() {
@@ -2053,12 +2137,23 @@
     const lodgingType = document.getElementById('lodgingType').value;
     const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
 
-    let capPerPerson = 70000;
-    if (regionType === 'seoul') capPerPerson = 100000;
-    else if (regionType === 'metro') capPerPerson = 80000;
-    else capPerPerson = 70000;
+    // 제1호 여비지급구분 공무원 포함 여부 확인
+    const allGrade1 = travelers.length > 0 && travelers.every(t => t.grade === "1");
 
-    if (lodgingExtra30) capPerPerson = Math.round(capPerPerson * 1.3);
+    let capPerPerson = 70000;
+    if (allGrade1) {
+      capPerPerson = Infinity; // 제1호는 실비 전액 인정
+    } else if (regionType === 'seoul') {
+      capPerPerson = 100000;
+    } else if (regionType === 'metro') {
+      capPerPerson = 80000;
+    } else {
+      capPerPerson = 70000;
+    }
+
+    if (!allGrade1 && lodgingExtra30) {
+      capPerPerson = Math.round(capPerPerson * 1.3);
+    }
 
     let recognizedLodging = 0;
     if (lodgingType === 'none' || lodgingNights === 0) {
@@ -2066,8 +2161,12 @@
     } else if (lodgingType === 'relative') {
       recognizedLodging = lodgingNights * 20000 * numTravelers;
     } else {
-      const totalCap = capPerPerson * lodgingNights * numTravelers;
-      recognizedLodging = Math.min(lodgingExpense, totalCap);
+      if (allGrade1) {
+        recognizedLodging = lodgingExpense;
+      } else {
+        const totalCap = capPerPerson * lodgingNights * numTravelers;
+        recognizedLodging = Math.min(lodgingExpense, totalCap);
+      }
     }
     document.getElementById('customLodgingTotal').value = recognizedLodging;
 
@@ -2076,6 +2175,7 @@
 
   function applyManualAmounts() {
     const numTravelers = travelers.length;
+    const regionType = document.getElementById('regionType').value;
     const mealTotal = parseInt(document.getElementById('customMealTotal').value) || 0;
     const useMealDetail = document.getElementById('useMealDetailOption').checked;
     const useIndivMeal = document.getElementById('useIndividualMeal').checked;
@@ -2087,7 +2187,9 @@
     const lodgingNights = parseInt(document.getElementById('lodgingNights').value) || 0;
     const lodgingExpense = parseInt(document.getElementById('lodgingExpense').value) || 0;
     const lodgingTotal = parseInt(document.getElementById('customLodgingTotal').value) || 0;
+    const lodgingType = document.getElementById('lodgingType').value;
     const lodgingPayType = document.getElementById('lodgingPayType').value;
+    const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
 
     const travelerPersonalAmounts = {};
     travelers.forEach(t => { travelerPersonalAmounts[t.id] = 0; });
@@ -2260,31 +2362,55 @@
     document.getElementById('viewDailyTotal').innerText = `${dailyTotal.toLocaleString()}원`;
     document.getElementById('viewDailySubNote').innerText = govCarUsed ? "(공용차량 이용 50% 감액)" : "";
 
-    const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
-    let capPerPerson = (regionType === 'seoul' ? 100000 : (regionType === 'metro' ? 80000 : 70000));
-    if (lodgingExtra30) capPerPerson = Math.round(capPerPerson * 1.3);
-    const totalCap = capPerPerson * (lodgingNights || 1) * numTravelers;
+    /* 숙박비 서식 표기 최적화 (친지 집, 제1호 실비, 일반 실비 상한액 등) */
+    const allGrade1 = travelers.length > 0 && travelers.every(t => t.grade === "1");
 
-    let subCapNote = `(${capPerPerson.toLocaleString()}원 × ${numTravelers}명 = ${totalCap.toLocaleString()}원)`;
-    if (lodgingNights > 1) {
-      subCapNote = `(${capPerPerson.toLocaleString()}원 × ${lodgingNights}박 × ${numTravelers}명 = ${totalCap.toLocaleString()}원)`;
-    }
-
-    document.getElementById('viewLodgingCap').innerHTML = `
-      <div style="font-weight:bold;">${capPerPerson.toLocaleString()}원</div>
-      <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">${subCapNote}</div>
-    `;
-
-    document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
-    document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
-
-    const excessReason = document.getElementById('lodgingExcessReason').value.trim();
-    if (excessReason) {
-      document.getElementById('viewLodgingSubNote').innerText = `[초과사유] ${excessReason}`;
-    } else if (lodgingExtra30) {
-      document.getElementById('viewLodgingSubNote').innerText = "(부득이한 사유 30% 가산 적용)";
+    if (lodgingType === 'relative') {
+      document.getElementById('viewLodgingCap').innerHTML = `
+        <div style="font-weight:bold;">20,000원</div>
+        <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">(친지 집 1박당 정액)</div>
+      `;
+      document.getElementById('viewLodgingExpense').innerText = "친지 집 숙박";
+      document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
+      document.getElementById('viewLodgingSubNote').innerText = `(1박당 20,000원 × ${lodgingNights}박${numTravelers > 1 ? ` × ${numTravelers}명` : ''})`;
+    } else if (lodgingType === 'none' || lodgingNights === 0) {
+      document.getElementById('viewLodgingCap').innerHTML = `<div style="font-weight:bold;">-</div>`;
+      document.getElementById('viewLodgingExpense').innerText = "0원";
+      document.getElementById('viewLodgingTotal').innerText = "0원";
+      document.getElementById('viewLodgingSubNote').innerText = "(숙박 안함)";
+    } else if (allGrade1) {
+      document.getElementById('viewLodgingCap').innerHTML = `
+        <div style="font-weight:bold;">실비</div>
+        <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">(제1호 상한액 없음)</div>
+      `;
+      document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
+      document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
+      document.getElementById('viewLodgingSubNote').innerText = "(제1호 실비 정산)";
     } else {
-      document.getElementById('viewLodgingSubNote').innerText = "";
+      let capPerPerson = (regionType === 'seoul' ? 100000 : (regionType === 'metro' ? 80000 : 70000));
+      if (lodgingExtra30) capPerPerson = Math.round(capPerPerson * 1.3);
+      const totalCap = capPerPerson * (lodgingNights || 1) * numTravelers;
+
+      let subCapNote = `(${capPerPerson.toLocaleString()}원 × ${numTravelers}명 = ${totalCap.toLocaleString()}원)`;
+      if (lodgingNights > 1) {
+        subCapNote = `(${capPerPerson.toLocaleString()}원 × ${lodgingNights}박 × ${numTravelers}명 = ${totalCap.toLocaleString()}원)`;
+      }
+
+      document.getElementById('viewLodgingCap').innerHTML = `
+        <div style="font-weight:bold;">${capPerPerson.toLocaleString()}원</div>
+        <div class="sub-calc-note" style="font-size:7.5pt; color:#444;">${subCapNote}</div>
+      `;
+      document.getElementById('viewLodgingExpense').innerText = `${lodgingExpense.toLocaleString()}원`;
+      document.getElementById('viewLodgingTotal').innerText = `${lodgingTotal.toLocaleString()}원`;
+
+      const excessReason = document.getElementById('lodgingExcessReason').value.trim();
+      if (excessReason) {
+        document.getElementById('viewLodgingSubNote').innerText = `[초과사유] ${excessReason}`;
+      } else if (lodgingExtra30) {
+        document.getElementById('viewLodgingSubNote').innerText = "(부득이한 사유 30% 가산 적용)";
+      } else {
+        document.getElementById('viewLodgingSubNote').innerText = "";
+      }
     }
 
     document.getElementById('viewCorpSum').innerText = corpSum.toLocaleString();
@@ -2411,7 +2537,11 @@
 
     const excessReason = document.getElementById('lodgingExcessReason').value.trim();
     const lodgingExtra30 = document.getElementById('lodgingExtra30').checked;
-    if (excessReason) {
+    const lodgingType = document.getElementById('lodgingType').value;
+
+    if (lodgingType === 'relative') {
+      document.getElementById('viewLodgingSubNote').innerText = "(친지 집 등 숙박 정액지급)";
+    } else if (excessReason) {
       document.getElementById('viewLodgingSubNote').innerText = `[초과사유] ${excessReason}`;
     } else if (lodgingExtra30) {
       document.getElementById('viewLodgingSubNote').innerText = "(부득이한 사유 30% 가산 적용)";
@@ -2464,7 +2594,6 @@
     const usePurp = document.getElementById('useDestPurpose').checked;
     const destPurp = usePurp ? (document.getElementById('destPurpose').value.trim() || '현장 출장 및 업무 협의') : '현장 출장 및 업무 협의';
 
-    // 엑셀 내 출장기간 텍스트 및 파일명용 일자 서식 생성
     let periodText = '-';
     let fileDateTag = '';
     if (sDate && eDate) {
@@ -2490,7 +2619,6 @@
       }
     }
 
-    // 출장자별 여비 항목별 금액 산정
     const useMealDetail = document.getElementById('useMealDetailOption').checked;
     const useIndivMeal = document.getElementById('useIndividualMeal').checked;
     const mealTotal = parseInt(document.getElementById('customMealTotal').value) || 0;
@@ -2501,6 +2629,7 @@
     const dailyTotal = parseInt(document.getElementById('customDailyTotal').value) || 0;
 
     const lodgingTotal = parseInt(document.getElementById('customLodgingTotal').value) || 0;
+    const lodgingType = document.getElementById('lodgingType').value;
     const lodgingPayType = document.getElementById('lodgingPayType').value;
 
     const travelerFare = {};
@@ -2542,7 +2671,13 @@
 
     // 3. 숙박비 배분
     if (lodgingTotal > 0) {
-      if (lodgingPayType === 'corp') {
+      if (lodgingType === 'relative') {
+        const perP = Math.floor(lodgingTotal / numTravelers);
+        travelers.forEach((t, i) => {
+          travelerLodging[t.id] = perP + (i === 0 ? (lodgingTotal - (perP * numTravelers)) : 0);
+          travelerNote[t.id].push("친지 집 숙박(1박 2만원)");
+        });
+      } else if (lodgingPayType === 'corp') {
         travelers[0] && (travelerCorp[travelers[0].id] += lodgingTotal);
         travelers.forEach(t => travelerNote[t.id].push(`법인카드 숙박(${lodgingTotal.toLocaleString()}원)`));
       } else if (lodgingPayType === 'personal_split') {
@@ -2592,7 +2727,6 @@
     const manualFinal = parseInt(document.getElementById('manualFinalClaim').value) || 0;
     const manualReason = document.getElementById('manualReason').value.trim();
 
-    // 엑셀 행 데이터 구성
     const wsData = [
       ["관외여비 지급내역"],
       ["", "", "", "", "", "", "", "", "", "", "", "", `(단위: 원)`],
@@ -2644,7 +2778,6 @@
       ]);
     });
 
-    // 합계 행
     wsData.push([
       "합 계", "", "", "", "", "", "",
       sumTotal,
@@ -2657,13 +2790,11 @@
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    // 병합 범위 설정 (A1:M1 제목, 합계 행의 A~G 병합)
     ws['!merges'] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 12 } },
       { s: { r: wsData.length - 1, c: 0 }, e: { r: wsData.length - 1, c: 6 } }
     ];
 
-    // 가독성 높은 열 너비 세팅
     ws['!cols'] = [
       { wch: 6 },   // 연번
       { wch: 20 },  // 소속
@@ -2680,7 +2811,6 @@
       { wch: 32 }   // 비고
     ];
 
-    // 스타일 규격 정의
     const borderThin = {
       top: { style: "thin", color: { rgb: "000000" } },
       bottom: { style: "thin", color: { rgb: "000000" } },
@@ -2714,7 +2844,6 @@
       fill: { fgColor: { rgb: "F2F2F2" } },
       border: borderHeader
     };
-    // 1번 요청 반영: 출장지/출장목적/비고 등 데이터 셀에 자동 줄 바꿈(wrapText: true) 추가
     const styleDataCenter = {
       font: { name: "맑은 고딕", sz: 9.5 },
       alignment: { horizontal: "center", vertical: "center", wrapText: true },
@@ -2745,7 +2874,6 @@
       border: borderDoubleBottom
     };
 
-    // 셀별 서식 적용
     for (let R = 0; R < wsData.length; R++) {
       for (let C = 0; C < 13; C++) {
         const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
@@ -2770,9 +2898,9 @@
           }
         } else {
           if ([0, 1, 2, 3, 4, 5].includes(C)) {
-            ws[cellRef].s = styleDataCenter; // 연번, 소속, 직급, 성명, 출장기간, 출장지(줄바꿈 지원)
+            ws[cellRef].s = styleDataCenter;
           } else if (C === 6 || C === 12) {
-            ws[cellRef].s = styleDataLeft;   // 출장목적, 비고 (줄바꿈 지원)
+            ws[cellRef].s = styleDataLeft;
           } else {
             ws[cellRef].s = styleDataNumber;
           }
@@ -2780,7 +2908,6 @@
       }
     }
 
-    // 행 높이 지정 (텍스트 길이에 따라 유연하게 행 높이 자동 확장)
     ws['!rows'] = [
       { hpt: 34 },
       { hpt: 18 },
@@ -2804,7 +2931,6 @@
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "관외여비지급내역");
 
-    // 공문서 첨부용 표준 파일명 포맷
     const fileName = `관외여비 지급내역(${fileDateTag},${destLoc}).xlsx`;
     XLSX.writeFile(wb, fileName);
   }
