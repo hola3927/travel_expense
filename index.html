@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-kopub@1.0.0/kopubworldbatang.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- 엑셀 생성 및 셀 스타일 지원 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=f04ce1baa9821750748df3dbf57fa8dd&libraries=services"></script>
 
@@ -650,7 +651,7 @@
         </div>
       </div>
     </div>
-    <p class="subtitle">인사혁신처 공무원보수 등의 업무지침 제9장 공무원 여비업무 처리기준에 근거하여 여비를 자동 산정하고 표준 정산서 서식(PDF)으로 출력합니다.</p>
+    <p class="subtitle">인사혁신처 공무원보수 등의 업무지침 제9장 공무원 여비업무 처리기준에 근거하여 여비를 자동 산정하고 표준 정산서 인쇄 및 관외여비 지급내역 엑셀파일을 생성합니다.</p>
   </div>
 
   <!-- 모바일 탭 -->
@@ -659,7 +660,7 @@
       <i class="fa-solid fa-pen-to-square"></i> 여비 입력기
     </button>
     <button class="mobile-tab-btn" id="btnTabPreview" onclick="switchMobileView('preview')">
-      <i class="fa-solid fa-file-lines"></i> 서식 미리보기 & 다운로드
+      <i class="fa-solid fa-file-lines"></i> 서식 미리보기 & 인쇄
     </button>
   </div>
 
@@ -669,6 +670,7 @@
       <div class="panel-header">
         <span><i class="fa-solid fa-sliders mr-1"></i> 여비 정산 입력기</span>
         <div style="display:flex; gap:6px;">
+          <!-- 중복 버튼 제거 후 '정산내용 복사'만 깔끔하게 유지 -->
           <button class="btn btn-secondary btn-sm" onclick="copySummaryText()" title="메신저 보고용 요약 텍스트 복사">
             <i class="fa-regular fa-copy"></i> 정산내용 복사
           </button>
@@ -730,7 +732,7 @@
           <div class="inline-checkbox" style="margin-bottom:4px;">
             <input type="checkbox" id="useDestPurpose" onchange="toggleDestPurpose()">
             <label for="useDestPurpose" style="font-weight:600; cursor:pointer;">
-              출장목적 입력 (선택사항 - 선택 시 정산서 반영)
+              출장목적 입력 (선택 시 정산서 및 엑셀 반영)
             </label>
           </div>
           <div class="form-group" id="destPurposeContainer" style="display:none; margin-top:4px;">
@@ -979,7 +981,7 @@
               <input type="number" id="manualFinalClaim" value="0" step="100" oninput="applyFinalManualAdjustment()">
             </div>
             <div class="form-group">
-              <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 표 반영)</label>
+              <label style="color:#854d0e;">조정사유 및 산출근거 (신청서 및 엑셀 반영)</label>
               <input type="text" id="manualReason" value="기준 산정액 전액 청구" oninput="applyFinalManualAdjustment()">
             </div>
           </div>
@@ -1006,11 +1008,12 @@
     <!-- 우측 표준 정산서 미리보기 패널 -->
     <div class="preview-panel" id="previewPanel">
       <div class="action-bar">
-        <button class="btn btn-secondary" onclick="window.print()">
-          <i class="fa-solid fa-print"></i> 인쇄
+        <!-- '정산서 인쇄' 버튼을 엑셀 그린 대신 메인 네이비(btn-primary)로 변경 -->
+        <button class="btn btn-primary" onclick="window.print()" title="브라우저 인쇄 창에서 PDF로 저장하거나 바로 인쇄">
+          <i class="fa-solid fa-print"></i> 정산서 인쇄
         </button>
-        <button class="btn btn-primary" onclick="downloadPDF()">
-          <i class="fa-solid fa-file-pdf"></i> 여비정산신청서 PDF 다운로드
+        <button class="btn btn-success" onclick="exportTravelExpenseExcel()" title="교육청/학교 표준 관외여비 지급내역 엑셀 다운로드">
+          <i class="fa-solid fa-file-excel"></i> 관외여비 지급내역 엑셀 다운로드
         </button>
       </div>
 
@@ -1285,7 +1288,6 @@
     });
     renderTravelersUI();
 
-    // 입력 위치가 직급(직위) 란으로 가도록 수정
     setTimeout(() => {
       const posInput = document.getElementById(`t_pos_${travelers.length - 1}`);
       if (posInput) {
@@ -2448,15 +2450,26 @@
     });
   }
 
-  function downloadPDF() {
-    const sDateVal = document.getElementById('startDate').value;
-    const eDateVal = document.getElementById('endDate').value;
-    const place = document.getElementById('destLocation').value.trim() || "출장지";
+  /* 관외여비 지급내역 엑셀 파일 다운로드 함수 */
+  function exportTravelExpenseExcel() {
+    if (typeof XLSX === 'undefined') {
+      alert('엑셀 생성 라이브러리를 불러오지 못했습니다. 네트워크 상태를 확인해 주세요.');
+      return;
+    }
 
-    let fileName = "여비정산신청서.pdf";
-    if (sDateVal && eDateVal) {
-      const s = sDateVal.split('-');
-      const e = eDateVal.split('-');
+    const numTravelers = travelers.length;
+    const sDate = document.getElementById('startDate').value;
+    const eDate = document.getElementById('endDate').value;
+    const destLoc = document.getElementById('destLocation').value.trim() || '출장지';
+    const usePurp = document.getElementById('useDestPurpose').checked;
+    const destPurp = usePurp ? (document.getElementById('destPurpose').value.trim() || '현장 출장 및 업무 협의') : '현장 출장 및 업무 협의';
+
+    // 엑셀 내 출장기간 텍스트 및 파일명용 일자 서식 생성
+    let periodText = '-';
+    let fileDateTag = '';
+    if (sDate && eDate) {
+      const s = sDate.split('-');
+      const e = eDate.split('-');
       const sYY = s[0].slice(2);
       const sM = parseInt(s[1], 10);
       const sD = parseInt(s[2], 10);
@@ -2464,18 +2477,336 @@
       const eM = parseInt(e[1], 10);
       const eD = parseInt(e[2], 10);
 
-      fileName = `여비정산신청서(${sYY}.${sM}.${sD}.~${eYY}.${eM}.${eD}., ${place}).pdf`;
+      if (sDate === eDate) {
+        periodText = `${s[0]}. ${sM}. ${sD}.`;
+        fileDateTag = `${sYY}.${sM}.${sD}.`;
+      } else {
+        periodText = `${s[0]}. ${sM}. ${sD}. ~ ${e[0]}. ${eM}. ${eD}.`;
+        if (s[0] === e[0] && s[1] === e[1]) {
+          fileDateTag = `${sYY}.${sM}.${sD}~${eD}.`;
+        } else {
+          fileDateTag = `${sYY}.${sM}.${sD}~${eM}.${eD}.`;
+        }
+      }
     }
 
-    const element = document.getElementById('pdf-container');
-    const opt = {
-      margin: [0, 0, 0, 0],
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    // 출장자별 여비 항목별 금액 산정
+    const useMealDetail = document.getElementById('useMealDetailOption').checked;
+    const useIndivMeal = document.getElementById('useIndividualMeal').checked;
+    const mealTotal = parseInt(document.getElementById('customMealTotal').value) || 0;
+
+    const dailyDays = parseInt(document.getElementById('dailyDays').value) || 0;
+    const dailyUnit = parseInt(document.getElementById('dailyUnitPrice').value) || 25000;
+    const govCarUsed = document.getElementById('govCarUsed').checked;
+    const dailyTotal = parseInt(document.getElementById('customDailyTotal').value) || 0;
+
+    const lodgingTotal = parseInt(document.getElementById('customLodgingTotal').value) || 0;
+    const lodgingPayType = document.getElementById('lodgingPayType').value;
+
+    const travelerFare = {};
+    const travelerDaily = {};
+    const travelerLodging = {};
+    const travelerMeal = {};
+    const travelerCorp = {};
+    const travelerNote = {};
+
+    travelers.forEach(t => {
+      travelerFare[t.id] = 0;
+      travelerDaily[t.id] = 0;
+      travelerLodging[t.id] = 0;
+      travelerMeal[t.id] = 0;
+      travelerCorp[t.id] = 0;
+      travelerNote[t.id] = [];
+    });
+
+    // 1. 식비 배분
+    if (useIndivMeal) {
+      travelers.forEach(t => {
+        travelerMeal[t.id] = parseInt(t.customMeal) || 0;
+      });
+    } else {
+      const mealPerPerson = Math.floor(mealTotal / numTravelers);
+      travelers.forEach((t, i) => {
+        travelerMeal[t.id] = mealPerPerson + (i === 0 ? (mealTotal - (mealPerPerson * numTravelers)) : 0);
+      });
+    }
+
+    // 2. 일비 배분
+    const dailyPerPerson = Math.floor(dailyTotal / numTravelers);
+    travelers.forEach((t, i) => {
+      travelerDaily[t.id] = dailyPerPerson + (i === 0 ? (dailyTotal - (dailyPerPerson * numTravelers)) : 0);
+    });
+    if (govCarUsed) {
+      travelers.forEach(t => travelerNote[t.id].push("공무용 차량 이용(일비 50% 감액)"));
+    }
+
+    // 3. 숙박비 배분
+    if (lodgingTotal > 0) {
+      if (lodgingPayType === 'corp') {
+        travelers[0] && (travelerCorp[travelers[0].id] += lodgingTotal);
+        travelers.forEach(t => travelerNote[t.id].push(`법인카드 숙박(${lodgingTotal.toLocaleString()}원)`));
+      } else if (lodgingPayType === 'personal_split') {
+        const perP = Math.floor(lodgingTotal / numTravelers);
+        travelers.forEach((t, i) => {
+          travelerLodging[t.id] = perP + (i === 0 ? (lodgingTotal - (perP * numTravelers)) : 0);
+        });
+      } else if (lodgingPayType.startsWith('single_')) {
+        const targetId = lodgingPayType.replace('single_', '');
+        const tObj = travelerLodging[targetId] !== undefined ? targetId : travelers[0].id;
+        travelerLodging[tObj] += lodgingTotal;
+        if (numTravelers > 1) {
+          travelers.forEach(t => {
+            if (t.id === tObj) travelerNote[t.id].push(`숙박비 전액 일괄결제(${lodgingTotal.toLocaleString()}원)`);
+          });
+        }
+      }
+    }
+
+    // 4. 운임 배분
+    const trans = document.querySelectorAll('.f-trans');
+    const pays = document.querySelectorAll('.f-pay');
+    const amounts = document.querySelectorAll('.f-amount');
+
+    for (let i = 0; i < amounts.length; i++) {
+      const amt = parseInt(amounts[i].value) || 0;
+      const payVal = pays[i].value;
+      const transName = trans[i].value || '교통편';
+
+      if (payVal === 'corp') {
+        travelers[0] && (travelerCorp[travelers[0].id] += amt);
+        travelerNote[travelers[0].id].push(`법인카드 운임(${transName} ${amt.toLocaleString()}원)`);
+      } else if (payVal === 'personal_split') {
+        const perP = Math.floor(amt / numTravelers);
+        travelers.forEach((t, idx) => {
+          travelerFare[t.id] += perP + (idx === 0 ? (amt - (perP * numTravelers)) : 0);
+        });
+      } else if (payVal.startsWith('single_')) {
+        const targetId = payVal.replace('single_', '');
+        const tObj = travelerFare[targetId] !== undefined ? targetId : travelers[0].id;
+        travelerFare[tObj] += amt;
+      }
+    }
+
+    // 수기 조정 여부 반영
+    const useManual = document.getElementById('useManualAdjustment').checked;
+    const manualFinal = parseInt(document.getElementById('manualFinalClaim').value) || 0;
+    const manualReason = document.getElementById('manualReason').value.trim();
+
+    // 엑셀 행 데이터 구성
+    const wsData = [
+      ["관외여비 지급내역"],
+      ["", "", "", "", "", "", "", "", "", "", "", "", `(단위: 원)`],
+      ["연번", "소속", "직급", "성명", "출장기간", "출장지", "출장목적", "지급액 계", "운임", "일비", "숙박비", "식비", "비고"]
+    ];
+
+    let sumTotal = 0;
+    let sumFare = 0;
+    let sumDaily = 0;
+    let sumLodging = 0;
+    let sumMeal = 0;
+
+    travelers.forEach((t, idx) => {
+      let f = travelerFare[t.id] || 0;
+      let d = travelerDaily[t.id] || 0;
+      let l = travelerLodging[t.id] || 0;
+      let m = travelerMeal[t.id] || 0;
+      let rowTotal = f + d + l + m;
+
+      let notes = [...travelerNote[t.id]];
+
+      if (useManual) {
+        const perCapita = Math.floor(manualFinal / numTravelers);
+        const remainder = manualFinal - (perCapita * numTravelers);
+        rowTotal = perCapita + (idx === 0 ? remainder : 0);
+        if (manualReason) notes.push(`수기조정(${manualReason})`);
+      }
+
+      sumTotal += rowTotal;
+      sumFare += f;
+      sumDaily += d;
+      sumLodging += l;
+      sumMeal += m;
+
+      wsData.push([
+        idx + 1,
+        t.dept,
+        t.pos || "-",
+        t.name,
+        periodText,
+        destLoc,
+        destPurp,
+        rowTotal,
+        f,
+        d,
+        l,
+        m,
+        notes.join('; ')
+      ]);
+    });
+
+    // 합계 행
+    wsData.push([
+      "합 계", "", "", "", "", "", "",
+      sumTotal,
+      sumFare,
+      sumDaily,
+      sumLodging,
+      sumMeal,
+      ""
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // 병합 범위 설정 (A1:M1 제목, 합계 행의 A~G 병합)
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 12 } },
+      { s: { r: wsData.length - 1, c: 0 }, e: { r: wsData.length - 1, c: 6 } }
+    ];
+
+    // 가독성 높은 열 너비 세팅
+    ws['!cols'] = [
+      { wch: 6 },   // 연번
+      { wch: 20 },  // 소속
+      { wch: 14 },  // 직급
+      { wch: 11 },  // 성명
+      { wch: 25 },  // 출장기간
+      { wch: 18 },  // 출장지
+      { wch: 30 },  // 출장목적
+      { wch: 14 },  // 지급액 계
+      { wch: 12 },  // 운임
+      { wch: 11 },  // 일비
+      { wch: 12 },  // 숙박비
+      { wch: 11 },  // 식비
+      { wch: 32 }   // 비고
+    ];
+
+    // 스타일 규격 정의
+    const borderThin = {
+      top: { style: "thin", color: { rgb: "000000" } },
+      bottom: { style: "thin", color: { rgb: "000000" } },
+      left: { style: "thin", color: { rgb: "000000" } },
+      right: { style: "thin", color: { rgb: "000000" } }
     };
-    html2pdf().set(opt).from(element).save();
+    const borderHeader = {
+      top: { style: "medium", color: { rgb: "000000" } },
+      bottom: { style: "medium", color: { rgb: "000000" } },
+      left: { style: "thin", color: { rgb: "000000" } },
+      right: { style: "thin", color: { rgb: "000000" } }
+    };
+    const borderDoubleBottom = {
+      top: { style: "thin", color: { rgb: "000000" } },
+      bottom: { style: "double", color: { rgb: "000000" } },
+      left: { style: "thin", color: { rgb: "000000" } },
+      right: { style: "thin", color: { rgb: "000000" } }
+    };
+
+    const styleTitle = {
+      font: { name: "맑은 고딕", sz: 17, bold: true },
+      alignment: { horizontal: "center", vertical: "center" }
+    };
+    const styleSub = {
+      font: { name: "맑은 고딕", sz: 9.5, color: { rgb: "555555" } },
+      alignment: { horizontal: "right", vertical: "center" }
+    };
+    const styleHeader = {
+      font: { name: "맑은 고딕", sz: 10, bold: true },
+      alignment: { horizontal: "center", vertical: "center", wrapText: true },
+      fill: { fgColor: { rgb: "F2F2F2" } },
+      border: borderHeader
+    };
+    // 1번 요청 반영: 출장지/출장목적/비고 등 데이터 셀에 자동 줄 바꿈(wrapText: true) 추가
+    const styleDataCenter = {
+      font: { name: "맑은 고딕", sz: 9.5 },
+      alignment: { horizontal: "center", vertical: "center", wrapText: true },
+      border: borderThin
+    };
+    const styleDataLeft = {
+      font: { name: "맑은 고딕", sz: 9.5 },
+      alignment: { horizontal: "left", vertical: "center", wrapText: true },
+      border: borderThin
+    };
+    const styleDataNumber = {
+      font: { name: "맑은 고딕", sz: 9.5 },
+      alignment: { horizontal: "right", vertical: "center" },
+      numFmt: "#,##0",
+      border: borderThin
+    };
+    const styleTotal = {
+      font: { name: "맑은 고딕", sz: 10, bold: true },
+      alignment: { horizontal: "center", vertical: "center" },
+      fill: { fgColor: { rgb: "F9F9F9" } },
+      border: borderDoubleBottom
+    };
+    const styleTotalNumber = {
+      font: { name: "맑은 고딕", sz: 10, bold: true },
+      alignment: { horizontal: "right", vertical: "center" },
+      fill: { fgColor: { rgb: "F9F9F9" } },
+      numFmt: "#,##0",
+      border: borderDoubleBottom
+    };
+
+    // 셀별 서식 적용
+    for (let R = 0; R < wsData.length; R++) {
+      for (let C = 0; C < 13; C++) {
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!ws[cellRef]) {
+          if (R >= 2) ws[cellRef] = { t: "s", v: "" };
+          else continue;
+        }
+
+        if (R === 0) {
+          ws[cellRef].s = styleTitle;
+        } else if (R === 1) {
+          ws[cellRef].s = styleSub;
+        } else if (R === 2) {
+          ws[cellRef].s = styleHeader;
+        } else if (R === wsData.length - 1) {
+          if (C <= 6) {
+            ws[cellRef].s = styleTotal;
+          } else if (C >= 7 && C <= 11) {
+            ws[cellRef].s = styleTotalNumber;
+          } else {
+            ws[cellRef].s = styleTotal;
+          }
+        } else {
+          if ([0, 1, 2, 3, 4, 5].includes(C)) {
+            ws[cellRef].s = styleDataCenter; // 연번, 소속, 직급, 성명, 출장기간, 출장지(줄바꿈 지원)
+          } else if (C === 6 || C === 12) {
+            ws[cellRef].s = styleDataLeft;   // 출장목적, 비고 (줄바꿈 지원)
+          } else {
+            ws[cellRef].s = styleDataNumber;
+          }
+        }
+      }
+    }
+
+    // 행 높이 지정 (텍스트 길이에 따라 유연하게 행 높이 자동 확장)
+    ws['!rows'] = [
+      { hpt: 34 },
+      { hpt: 18 },
+      { hpt: 26 }
+    ];
+    for (let i = 0; i < travelers.length; i++) {
+      const t = travelers[i];
+      const notesStr = (travelerNote[t.id] || []).join('; ');
+      const maxTextLen = Math.max(destLoc.length, destPurp.length, notesStr.length);
+      
+      let rowHeight = 24;
+      if (maxTextLen > 55) {
+        rowHeight = 52;
+      } else if (maxTextLen > 24) {
+        rowHeight = 36;
+      }
+      ws['!rows'].push({ hpt: rowHeight });
+    }
+    ws['!rows'].push({ hpt: 24 });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "관외여비지급내역");
+
+    // 공문서 첨부용 표준 파일명 포맷
+    const fileName = `관외여비 지급내역(${fileDateTag},${destLoc}).xlsx`;
+    XLSX.writeFile(wb, fileName);
   }
 
   window.onload = function() {
